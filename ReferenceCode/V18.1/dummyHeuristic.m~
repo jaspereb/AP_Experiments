@@ -1,0 +1,7 @@
+function H = dummyHeuristic(x, yHat)
+
+H = sqrt((x(1)-yHat(1))^2 + (x(2)-yHat(2))^2 + (x(3)-yHat(3))^2);
+H = 0;
+
+end
+
