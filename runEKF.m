@@ -1,14 +1,14 @@
-function [x,P] = runEKF(straightPoses,expState,functH,x,Q,R,A,K,C,P)
+function [x,P,obs] = runEKF(poses,expState,functH,x,Q,R,A,K,C,P)
 %RUNEKF takes the camera poses list, experiment state, obeservation
 %function handle and EKF matrices. Runs an EKF filter over the simulated
 %camera obs and returns the state estimate over time along with state covar
 %matrix P
 
-for idx = 1:size(straightPoses,2)
+for idx = 1:size(poses,2)
     time = idx + 1; %Time starts from 2
     x(:,time) = A*x(:,time-1);
     
-    cameraPose = straightPoses(:,idx);
+    cameraPose = poses(:,idx);
     if(isequal(cameraPose,expState.grabPose))
         print("Reached target");
         break;
@@ -23,7 +23,7 @@ for idx = 1:size(straightPoses,2)
     
     K{time} = P{time}*C{time}'*inv(R + C{time}*P{time}*C{time}');
     x(:,time) = x(:,time) + K{time}*(zHat - z);
-    innov(:,time) = zHat - z;
+    obs(:,time) = z;
     P{time} = P{time} - K{time}*C{time}*P{time};
 end
 

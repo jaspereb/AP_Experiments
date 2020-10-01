@@ -27,7 +27,7 @@ expState.grabPose = [0;0;4;1;0;0;0]; %The final camera pose
 expState.trellisDist = 4;
 expState.targetPose = [0.5;0.7;expState.trellisDist]; % True target position
 expState.targetZNoise = 0.25;
-expState.numPoses = 10; %Number of poses to generate on each path, inc initial pose
+expState.numPoses = 11; %Number of poses to generate on each path, inc initial pose
 expState.diagonalDist = 0.5; %Distance the diagonal path moves off straight
 
 % Add Initial Noise
@@ -68,12 +68,12 @@ APPoses = getPosesAP(cameraPose,expState);
 
 expState.currExpName = 'Straight Path';
 plotState(straightPoses, expState, fig_straight);
-[x_straight,P_straight] = runEKF(straightPoses,expState,functH,x,Q,R,A,K,C,P);
+[x_straight,P_straight,z_straight] = runEKF(straightPoses,expState,functH,x,Q,R,A,K,C,P);
 
-% expState.currExpName = 'Diagonal Path';
-% plotState(diagonalPoses, expState, fig_diag);
-% [x_diag,P_diag] = runEKF(diagonalPoses,expState,functH,x,Q,R,A,K,C,P);
-% 
+expState.currExpName = 'Diagonal Path';
+plotState(diagonalPoses, expState, fig_diag);
+[x_diag,P_diag,z_diag] = runEKF(diagonalPoses,expState,functH,x,Q,R,A,K,C,P);
+
 % expState.currExpName = 'Active Perception Path';
 % plotState(APPoses, expState, fig_AP);
 % [x_AP,P_AP] = runEKF(APPoses,expState,functH,x,Q,R,A,K,C,P);
