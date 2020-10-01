@@ -16,7 +16,7 @@ clearvars
 addpath('./triad');
 
 % Simulation Parameters
-expState.R = 0.00001;
+expState.R = 1;
 expState.Qxy = 0.001;
 expState.Qz = 0.001;
 expState.Pxy = 0.05;
@@ -25,10 +25,9 @@ expState.cameraParams = getCameraParams();
 expState.initialPose = [0;0;0;1;0;0;0]; %(xyz position) and (wxyz quaternion)
 expState.grabPose = [0;0;4;1;0;0;0]; %The final camera pose
 expState.trellisDist = 4;
-expState.targetPose = [0.5;0.7;expState.trellisDist]; % True target position
+expState.targetPose = [0;0;expState.trellisDist]; % True target position
 expState.targetZNoise = 0.25;
 expState.numPoses = 10; %Number of poses to generate on each path, inc initial pose
-expState.diagonalDist = 0.5; %Distance the diagonal path moves off straight
 
 % Add Initial Noise
 expState.targetPose(3) = expState.targetPose(3) + normrnd(0,expState.targetZNoise);
@@ -42,8 +41,8 @@ P{1} = [expState.Pxy, 0, 0; 0, expState.Pxy, 0; 0, 0, expState.Pz];
 functH = @ObsFunction;
 
 fig_straight = figure(1);
-fig_diag = figure(2);
-fig_AP = figure(3);
+% fig_diag = figure(2);
+% fig_AP = figure(3);
 
 cameraPose = expState.initialPose;
 % plotState(cameraPose, expState, fig_straight);
@@ -63,18 +62,42 @@ assert(zHat(2) == v);
 
 % Get poses list
 straightPoses = getPosesStraight(cameraPose,expState);
-diagonalPoses = getPosesDiagonal(cameraPose,expState);
-APPoses = getPosesAP(cameraPose,expState);
+% diagonalPoses = getPosesDiagonal();
+% APPoses = getPosesAP();
 
 expState.currExpName = 'Straight Path';
 plotState(straightPoses, expState, fig_straight);
-[x_straight,P_straight] = runEKF(straightPoses,expState,functH,x,Q,R,A,K,C,P);
+runEKF(straightPoses,expState,functH,Q,R,A,K,C,
 
-% expState.currExpName = 'Diagonal Path';
-% plotState(diagonalPoses, expState, fig_diag);
-% [x_diag,P_diag] = runEKF(diagonalPoses,expState,functH,x,Q,R,A,K,C,P);
-% 
-% expState.currExpName = 'Active Perception Path';
-% plotState(APPoses, expState, fig_AP);
-% [x_AP,P_AP] = runEKF(APPoses,expState,functH,x,Q,R,A,K,C,P);
+for idx = 1:size(straightPoses,2)
+    time = idx + 1; %Time starts from 2
+    x(:,time) = A*x(:,time-1);
+    
+    cameraPose = straightPoses(:,idx);
+    if(isequal(cameraPose,expState.grabPose))
+        print("Reached target");
+        break;
+    end
+    
+    xPrior(:,time) = x(:,time);
+    P{time} = A*P{time-1}*A' + Q;
+    
+    [zHat,C{time}] = calcJac(functH, x(:,time), cameraPose, expState);
+    [u,v] = getDetection(cameraPose, expState);
+    z = [u;v];
+    
+    K{time} = P{time}*C{time}'*inv(R + C{time}*P{time}*C{time}');
+    x(:,time) = x(:,time) + K{time}*(zHat - z);
+    innov(:,time) = zHat - z;
+    P{time} = P{time} - K{time}*C{time}*P{time};
+end
+
+fprintf('Estimated target pose from straight trajectory is %f,%f,%f \n',x(1,end),x(2,end),x(3,end));
+plotEstimates(x,expState);
+
+% Run EKF update on position
+
+
+% Get new position
+
 
