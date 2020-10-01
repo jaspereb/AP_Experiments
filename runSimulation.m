@@ -17,8 +17,8 @@ expState.Qxy = 0.001;
 expState.Qz = 0.001;
 expState.Pxy = 0.05;
 expState.Pz = 0.7;
-expState.intrinsics = getD435Intrinsics();
-expState.initialPose = [0,0,0,1,0,0,0]'; %(xyz position) and (wxyz quaternion)
+expState.cameraParams = getCameraParams();
+expState.initialPose = [0;0;0;1;0;0;0]; %(xyz position) and (wxyz quaternion)
 expState.targetPose = [0;0;4]; % True target position
 
 % Set up EKF for one target
@@ -28,9 +28,11 @@ Q = [expState.Qxy, 0, 0; 0, expState.Qxy, 0; 0, 0, expState.Qz];
 P{1} = [expState.Pxy, 0, 0; 0, expState.Pxy, 0; 0, 0, expState.Pz];
 
 cameraPose = expState.initialPose;
+
+% plotState(cameraPose, expState);
 [u,v] = getDetection(cameraPose, expState);
 
-x(:,1) = ; % Estimate initial state using first detection
+% x(:,1) = ; % Estimate initial state using first detection
 
 functH = @ObsFunction;
 
