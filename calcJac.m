@@ -12,7 +12,12 @@ function [z,J] = calcJac(funct, state, cameraPose, expState)
 
 %This code is specific to the VS EKF task
 
-z = funct(state, cameraPose, expState);
+[z,inFrame] = funct(state, cameraPose, expState);
+if(~inFrame)
+    z = [-1,-1];
+    disp("CAUTION: Pixel outside frame");
+end
+
 cols = numel(state);
 rows = numel(z);
 
@@ -22,7 +27,8 @@ h = cols*eps;
 for k = 1:cols
     xi = state;
     xi(k) = xi(k) + h*i; %x(i) with a complex part
-    J(:,k) = imag(funct(xi, cameraPose, expState))/h; %See differentiation by complex parts
+    [result,~] = funct(xi, cameraPose, expState);
+    J(:,k) = imag(result)/h; %See differentiation by complex parts
     
 end
 end

@@ -25,10 +25,12 @@ expState.cameraParams = getCameraParams();
 expState.initialPose = [0;0;0;1;0;0;0]; %(xyz position) and (wxyz quaternion)
 expState.grabPose = [0;0;4;1;0;0;0]; %The final camera pose
 expState.trellisDist = 4;
-expState.targetPose = [0.5;0.7;expState.trellisDist]; % True target position
+expState.targetPose = [0.0;0.0;expState.trellisDist]; % True target position
 expState.targetZNoise = 0.25;
 expState.numPoses = 11; %Number of poses to generate on each path, inc initial pose
 expState.diagonalDist = 0.5; %Distance the diagonal path moves off straight
+expState.minCamDistance = 0.25; %Below this z range, detections will not be generated
+expState.maxCamDistance = inf;
 
 % Add Initial Noise
 expState.targetPose(3) = expState.targetPose(3) + normrnd(0,expState.targetZNoise);
@@ -66,9 +68,9 @@ straightPoses = getPosesStraight(cameraPose,expState);
 diagonalPoses = getPosesDiagonal(cameraPose,expState);
 APPoses = getPosesAP(cameraPose,expState);
 
-expState.currExpName = 'Straight Path';
-plotState(straightPoses, expState, fig_straight);
-[x_straight,P_straight,z_straight] = runEKF(straightPoses,expState,functH,x,Q,R,A,K,C,P);
+% expState.currExpName = 'Straight Path';
+% plotState(straightPoses, expState, fig_straight);
+% [x_straight,P_straight,z_straight] = runEKF(straightPoses,expState,functH,x,Q,R,A,K,C,P);
 
 expState.currExpName = 'Diagonal Path';
 plotState(diagonalPoses, expState, fig_diag);

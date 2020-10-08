@@ -1,4 +1,4 @@
-function obs = ObsFunction(state, cameraPose, expState)
+function [obs,inFrame] = ObsFunction(state, cameraPose, expState)
 %G The observation function, takes the filter state (estimated target pose)
 %and the current camera position. Returns the predicted pixel locations for
 %where the detection would fall.
@@ -13,6 +13,9 @@ function obs = ObsFunction(state, cameraPose, expState)
 %'worldToImage' can't be used with calcJac, but the output of ObsFunction
 %and getDetection should be the same
 
+%Note: the values of u,v must not be manually set (as an out of frame flag)
+%because this breaks complex differentiation 
+
 assert(size(state,1) == 3);
 assert(size(state,2) == 1);
 
@@ -25,6 +28,9 @@ cameraPose = cameraPose';
 T = cameraPose(1:3);
 R = quat2rotm(cameraPose(4:7));
 
+T = -1*T;
+R = R';
+
 %Put points from world frame into camera frame
 camPoints = state'*R + T;
 
@@ -34,11 +40,9 @@ camPoints = state'*R + T;
 u = intrinsics.FocalLength(1)*(camPoints(1)/camPoints(3)) + intrinsics.PrincipalPoint(1);
 v = intrinsics.FocalLength(2)*(camPoints(2)/camPoints(3)) + intrinsics.PrincipalPoint(2);
 
+inFrame = true;
 if(min([u,v]) <= 0) || (u >= intrinsics.ImageSize(2)) || (v >= intrinsics.ImageSize(1))
-    disp("CAUTION: Pixel outside frame");
-    u = -1;
-    v = -1;
-%     disp(noVar); %To stop the program here
+    inFrame = false;
 end
 
 obs = [u;v];

@@ -1,6 +1,5 @@
 function [u,v] = getDetection(cameraPose, expState)
-%GETDETECTION Takes the current camera pose (TF from the world frame to the 
-%camera frame) and experiment state and
+%GETDETECTION Takes the current camera pose and experiment state and
 %generates a simulated camera detection in pixel coordinates (u,v). If the
 %target is not in frame, u = v = -1
 
@@ -16,11 +15,6 @@ cameraPose = cameraPose';
 
 translationVector = cameraPose(1:3);
 rotationMatrix = quat2rotm(cameraPose(4:7));
-translationVector = -1*(translationVector);
-rotationMatrix = rotationMatrix';
-
-%This takes the rotation / translation of world coordinates relative to the
-%image coords. Ie the inverse of the camera pose
 projection = worldToImage(expState.cameraParams,rotationMatrix,translationVector,targetPose);
 u = projection(1);
 v = projection(2);
@@ -36,8 +30,10 @@ end
 
 %Check if it's within the camera min distance range
 camPoints = targetPose*rotationMatrix + translationVector;
-if((camPoints(3) < expState.minCamDistance) || (camPoints(3) > expState.maxCamDistance))
-    disp("Target out of range (too close/far) of camera");
+
+zDist = 
+if(u >= ImSize(2)) || (v >= ImSize(1)) || (u <= 0) || (v <= 0)
+    print("Target out of frame");
     u = -1;
     v = -1;
     return
