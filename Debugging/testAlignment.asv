@@ -1,0 +1,24 @@
+% This script tests camera axes/TF defintions are consistent
+
+% cameraPose defines the transform from the world axes to the camera axes. 
+
+
+% Generate a cameraPose
+cameraPose = [0;0;0;1;0;0;0]; %(xyz position) and (wxyz quaternion)
+target = 
+
+% Align it to the target
+expState.initialPose = alignCamera(expState.initialPose, expState.grabPose(1:3),expState);
+
+% Move the target somewhere new
+
+% Display these to check generation, alignment and display of cameraPose
+
+
+% Project a point into the frame
+
+
+% Deproject a point from the frame
+
+
+% Check these match

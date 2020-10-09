@@ -23,12 +23,12 @@ for idx = 1:size(poses,2)
     obs(:,time) = z;
     
     if(u == -1)
-        disp("Detection out of frame, skipping update step");
+        fprintf("Detection out of frame for pose %i, skipping update step \n", idx);
         continue;
     end
     
     if(zHat(1) == -1)
-        disp("Estimated detection out of frame, skipping update step");
+        fprintf("Estimated detection out of frame for pose %i, skipping update step \n",idx);
         continue;
     end
     

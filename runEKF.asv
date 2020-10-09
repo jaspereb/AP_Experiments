@@ -20,15 +20,20 @@ for idx = 1:size(poses,2)
     [zHat,C{time}] = calcJac(functH, x(:,time), cameraPose, expState);
     [u,v] = getDetection(cameraPose, expState);
     z = [u;v];
+    obs(:,time) = z;
     
     if(u == -1)
-        print("Detection out of frame, skipping update step");
+        fprintf("Detection out of frame for pose %i, skipping update step \n", idx);
+        continue;
+    end
+    
+    if(zHat(1) == -1)
+        fprintf("Estimated detection out of frame for pose %i, skipping update step \n",idx);
         continue;
     end
     
     K{time} = P{time}*C{time}'*inv(R + C{time}*P{time}*C{time}');
     x(:,time) = x(:,time) + K{time}*(zHat - z);
-    obs(:,time) = z;
     P{time} = P{time} - K{time}*C{time}*P{time};
 end
 

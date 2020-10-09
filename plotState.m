@@ -3,7 +3,11 @@ function plotState(cameraPoses,expState,fig)
 %N is the number of poses to plot 
 
 assert(size(cameraPoses,1) == 7);
-figure(fig);
+if(exist('fig'))
+    figure(fig);
+else
+    fig = figure();
+end
 hold on
 
 for col = 1:size(cameraPoses,2)

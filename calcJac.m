@@ -15,7 +15,7 @@ function [z,J] = calcJac(funct, state, cameraPose, expState)
 [z,inFrame] = funct(state, cameraPose, expState);
 if(~inFrame)
     z = [-1,-1];
-    disp("CAUTION: Pixel outside frame");
+    disp("CAUTION: Pixel outside frame when finding Jacobian");
 end
 
 cols = numel(state);
