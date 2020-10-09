@@ -28,7 +28,7 @@ v = projection(2);
 ImSize = expState.cameraParams.ImageSize;
 %Check if it's in frame
 if(u >= ImSize(2)) || (v >= ImSize(1)) || (u <= 0) || (v <= 0)
-    print("Target out of frame");
+    disp("Target out of frame");
     u = -1;
     v = -1;
     return
