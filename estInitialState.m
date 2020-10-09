@@ -25,11 +25,6 @@ y = y*z;
 cameraPose = cameraPose';
 T = cameraPose(1:3);
 R = quat2rotm(cameraPose(4:7));
-
-%Invert transform
-R = R';
-T = -1*T;
-
 estState = [x,y,z]*R + T;
 
 end

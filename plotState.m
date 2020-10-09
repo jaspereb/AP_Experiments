@@ -10,7 +10,7 @@ for col = 1:size(cameraPoses,2)
     pose = cameraPoses(:,col);
     R = quat2rotm(pose(4:7)');
     t = pose(1:3);
-    pose3d = rigid3d(R,t');
+    pose3d = rigid3d(R',t');
 
     figure(fig);
     cam = plotCamera('AbsolutePose',pose3d,'Opacity',0, 'Size',0.1);
@@ -32,6 +32,7 @@ for col = 1:size(cameraPoses,2)
 end
 
 plot3(expState.targetPose(1),expState.targetPose(2),expState.targetPose(3), 'r*');
+plot3(expState.grabPose(1),expState.grabPose(2),expState.grabPose(3), 'ro');
 
 %Plot World Axes
 tf = makehgtform;

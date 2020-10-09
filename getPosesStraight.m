@@ -19,6 +19,7 @@ poses(:,1) = cameraPose;
 
 for n = 2:expState.numPoses
     pose = poses(:,n-1) + [stepDist*poseDiff;0;0;0;0]; %Assume fixed orientation
+    pose = alignCamera(pose,endPose,expState);
     poses(:,n) = pose;
 end
 

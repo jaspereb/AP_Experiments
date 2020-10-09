@@ -44,9 +44,26 @@ if((camPoints(3) < expState.minCamDistance) || (camPoints(3) > expState.maxCamDi
 end
 
 %Add noise 
+u = u + normrnd(0,expState.imageNoise);
+v = v + normrnd(0,expState.imageNoise);
 
 %Clamp noise to keep in frame
+if(u >= ImSize(2))
+    u = ImSize(2)-1;
+end
+if(v >= ImSize(1)) 
+    v = ImSize(1)-1;
+end
+if(u <= 0)
+    u = 1;
+end
+if(v <= 0)
+    v = 1;
+end
 
+%Actual detections are discretised
+u = round(u);
+v = round(v);
 
 end
 

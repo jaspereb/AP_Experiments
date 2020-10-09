@@ -11,9 +11,12 @@
 
 % All units are meters, seconds, rads, pixels
 
+% The camera pose is the transform from the world origin to the camera
+% frame origin.
+
 close all
 clearvars
-addpath('./triad');
+addpath('./Utils');
 
 % Simulation Parameters
 expState.R = 0.00001;
@@ -22,8 +25,9 @@ expState.Qz = 0.001;
 expState.Pxy = 0.05;
 expState.Pz = 0.7;
 expState.cameraParams = getCameraParams();
+expState.grabPose = [0;1;4;1;0;0;0]; %The final camera pose
 expState.initialPose = [0;0;0;1;0;0;0]; %(xyz position) and (wxyz quaternion)
-expState.grabPose = [0;0;4;1;0;0;0]; %The final camera pose
+expState.initialPose = alignCamera(expState.initialPose, expState.grabPose(1:3),expState);
 expState.trellisDist = 4;
 expState.targetPose = [0.0;0.0;expState.trellisDist]; % True target position
 expState.targetZNoise = 0.25;
@@ -31,9 +35,11 @@ expState.numPoses = 11; %Number of poses to generate on each path, inc initial p
 expState.diagonalDist = 0.5; %Distance the diagonal path moves off straight
 expState.minCamDistance = 0.25; %Below this z range, detections will not be generated
 expState.maxCamDistance = inf;
+expState.imageNoise = 2; %Sigma for pixel noise added to detections
 
 % Add Initial Noise
-expState.targetPose(3) = expState.targetPose(3) + normrnd(0,expState.targetZNoise);
+% expState.targetPose(3) = expState.targetPose(3) + normrnd(0,expState.targetZNoise);
+expState.targetPose(3) = expState.targetPose(3) + 0.3; %For testing
 fprintf('Actual target pose is %f,%f,%f \n',expState.targetPose(1),expState.targetPose(2),expState.targetPose(3));
 
 % Set up EKF for one target
@@ -48,7 +54,6 @@ fig_diag = figure(2);
 fig_AP = figure(3);
 
 cameraPose = expState.initialPose;
-% plotState(cameraPose, expState, fig_straight);
 [u,v] = getDetection(cameraPose, expState);
 
 % Estimate initial state using first detection, assume that we know roughly 
@@ -63,20 +68,19 @@ K = [];
 assert(zHat(1) == u);
 assert(zHat(2) == v);
 
-% Get poses list
-straightPoses = getPosesStraight(cameraPose,expState);
-diagonalPoses = getPosesDiagonal(cameraPose,expState);
-APPoses = getPosesAP(cameraPose,expState);
-
+% straightPoses = getPosesStraight(cameraPose,expState);
 % expState.currExpName = 'Straight Path';
 % plotState(straightPoses, expState, fig_straight);
 % [x_straight,P_straight,z_straight] = runEKF(straightPoses,expState,functH,x,Q,R,A,K,C,P);
 
+diagonalPoses = getPosesDiagonal(cameraPose,expState);
 expState.currExpName = 'Diagonal Path';
 plotState(diagonalPoses, expState, fig_diag);
 [x_diag,P_diag,z_diag] = runEKF(diagonalPoses,expState,functH,x,Q,R,A,K,C,P);
 
+% APPoses = getPosesAP(cameraPose,expState);
 % expState.currExpName = 'Active Perception Path';
 % plotState(APPoses, expState, fig_AP);
 % [x_AP,P_AP] = runEKF(APPoses,expState,functH,x,Q,R,A,K,C,P);
 
+tilefigs

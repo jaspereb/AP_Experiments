@@ -30,16 +30,20 @@ poses(:,1) = cameraPose;
 poseDiff = (midPose-startPose)./(dist/2); %Unit vector in direction of travel
 for n = 2:((expState.numPoses-1)/2)
     pose = poses(:,n-1) + [stepDist*poseDiff;0;0;0;0]; %Assume fixed orientation
+    pose = alignCamera(pose,endPose,expState); %Get orientation
     poses(:,n) = pose;
 end
 
 %Add middle point
-poses(:,end+1) = [midPose;1;0;0;0];
+pose = [midPose;1;0;0;0];
+pose = alignCamera(pose,endPose,expState); %Get orientation
+poses(:,end+1) = pose;
 
 %Path second half
 poseDiff = (endPose-midPose)./(dist/2); %Unit vector in direction of travel
 for n = (size(poses,2)+1):(expState.numPoses)
     pose = poses(:,n-1) + [stepDist*poseDiff;0;0;0;0]; %Assume fixed orientation
+    pose = alignCamera(pose,endPose,expState); %Get orientation
     poses(:,n) = pose;
 end
 
