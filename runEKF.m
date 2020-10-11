@@ -37,8 +37,12 @@ for idx = 1:size(poses,2)
     P{time} = P{time} - K{time}*C{time}*P{time};
 end
 
-fprintf('Estimated target pose from straight trajectory for experiment %s is %f,%f,%f \n', ...
+fprintf('Estimated target pose from %s is %f,%f,%f \n', ...
     expState.currExpName,x(1,end),x(2,end),x(3,end));
-plotEstimates(x,expState);
-
+fprintf('Estimate error from %s is %f,%f,%f \n', ...
+    expState.currExpName,expState.targetPose(1)-x(1,end), ...
+    expState.targetPose(2)-x(2,end),expState.targetPose(3)-x(3,end));
+if(expState.showFigs)
+    plotEstimates(x,expState);
+end
 end

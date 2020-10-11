@@ -19,7 +19,7 @@ clearvars
 addpath('./Utils');
 
 % Simulation Parameters
-expState.R = 0.00001;
+expState.R = 4;
 expState.Qxy = 0.001;
 expState.Qz = 0.001;
 expState.Pxy = 0.05;
@@ -31,11 +31,12 @@ expState.initialPose = alignCamera(expState.initialPose, expState.grabPose(1:3),
 expState.trellisDist = 4;
 expState.targetPose = [0.0;0.0;expState.trellisDist]; % True target position
 expState.targetZNoise = 0.25;
-expState.numPoses = 11; %Number of poses to generate on each path, inc initial pose
+expState.numPoses = 31; %Number of poses to generate on each path, inc initial pose. Must be odd
 expState.diagonalDist = 0.5; %Distance the diagonal path moves off straight
 expState.minCamDistance = 0.25; %Below this z range, detections will not be generated
 expState.maxCamDistance = inf;
 expState.imageNoise = 2; %Sigma for pixel noise added to detections
+expState.showFigs = true;
 
 % Add Initial Noise
 % expState.targetPose(3) = expState.targetPose(3) + normrnd(0,expState.targetZNoise);
@@ -54,7 +55,7 @@ cameraPose = expState.initialPose;
 
 % Estimate initial state using first detection, assume that we know roughly 
 % the distance to trellis
-x(:,1) = estInitialState(u,v,cameraPose,expState);
+x(:,1) = estInitialState(u,v,expState.trellisDist,cameraPose,expState);
 
 %G, H are assumed identity
 K = [];
@@ -64,25 +65,31 @@ K = [];
 assert(zHat(1) == u);
 assert(zHat(2) == v);
 
-% % Straight Path Experiment
-% fig_straight = figure(1);
-% straightPoses = getPosesStraight(cameraPose,expState);
-% expState.currExpName = 'Straight Path';
-% plotState(straightPoses, expState, fig_straight);
-% [x_straight,P_straight,z_straight] = runEKF(straightPoses,expState,functH,x,Q,R,A,K,C,P);
+% Straight Path Experiment
+straightPoses = getPosesStraight(cameraPose,expState);
+expState.currExpName = 'Straight Path';
+if(expState.showFigs)
+    fig_straight = figure();
+    plotState(straightPoses, expState, fig_straight);
+end
+[x_straight,P_straight,z_straight] = runEKF(straightPoses,expState,functH,x,Q,R,A,K,C,P);
 
 % Diagonal Path Experiment
-fig_diag = figure(2);
 diagonalPoses = getPosesDiagonal(cameraPose,expState);
 expState.currExpName = 'Diagonal Path';
-plotState(diagonalPoses, expState, fig_diag);
+if(expState.showFigs)
+    fig_diag = figure();
+    plotState(diagonalPoses, expState, fig_diag);
+end
 [x_diag,P_diag,z_diag] = runEKF(diagonalPoses,expState,functH,x,Q,R,A,K,C,P);
 
 % % Active Perception Experiment
-% fig_AP = figure(3);
 % APPoses = getPosesAP(cameraPose,expState);
 % expState.currExpName = 'Active Perception Path';
+% if(expState.showFigs)
+% fig_AP = figure(3);
 % plotState(APPoses, expState, fig_AP);
+% end
 % [x_AP,P_AP] = runEKF(APPoses,expState,functH,x,Q,R,A,K,C,P);
 
 tilefigs

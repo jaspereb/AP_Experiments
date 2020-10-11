@@ -7,7 +7,7 @@ function poses = getPosesDiagonal(cameraPose,expState)
 
 % Poses includes the start pose and the end pose
 
-%There must be a center pose
+%There must be a center pose, so numPoses must be odd
 assert(mod(expState.numPoses,2) ~= 0); 
 
 % Caculate the distance between camera and target

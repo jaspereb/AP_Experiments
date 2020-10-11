@@ -1,4 +1,4 @@
-function [obs,inFrame] = ObsFunction(state, cameraPose, expState)
+function [obs,inFrame] = ObsFunction(state, cameraPose, expState, intrinsics)
 %G The observation function, takes the filter state (estimated target pose)
 %and the current camera position. Returns the predicted pixel locations for
 %where the detection would fall.
@@ -21,8 +21,6 @@ assert(size(state,2) == 1);
 
 assert(size(cameraPose,1) == 7);
 assert(size(cameraPose,2) == 1);
-
-intrinsics = expState.cameraParams.Intrinsics;
 
 %Put points from world frame into camera frame
 camPoints = toCameraAxes(cameraPose,state);

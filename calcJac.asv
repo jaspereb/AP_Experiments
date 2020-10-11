@@ -12,9 +12,7 @@ function [z,J] = calcJac(funct, state, cameraPose, expState)
 
 %This code is specific to the VS EKF task
 
-intrinsics = expState.cameraParams.Intrinsics;
-
-[z,inFrame] = funct(state, cameraPose, expState, intrinsics);
+[z,inFrame] = funct(state, cameraPose, expState);
 if(~inFrame)
     z = [-1,-1];
     disp("CAUTION: Pixel outside frame when finding Jacobian");
@@ -29,7 +27,7 @@ h = cols*eps;
 for k = 1:cols
     xi = state;
     xi(k) = xi(k) + h*i; %x(i) with a complex part
-    [result,~] = funct(xi, cameraPose, expState, intrinsics);
+    [result,~] = funct(xi, cameraPose, expState, intrini);
     J(:,k) = imag(result)/h; %See differentiation by complex parts
     
 end
