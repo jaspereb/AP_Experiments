@@ -24,15 +24,8 @@ assert(size(cameraPose,2) == 1);
 
 intrinsics = expState.cameraParams.Intrinsics;
 
-cameraPose = cameraPose';
-T = cameraPose(1:3);
-R = quat2rotm(cameraPose(4:7));
-
-T = -1*T;
-R = R';
-
 %Put points from world frame into camera frame
-camPoints = state'*R + T;
+camPoints = toCameraAxes(cameraPose,state);
 
 % u = f*(X/Z) + o_x and v = f*(Y/Z) + o_y
 % From http://www.cse.psu.edu/~rtc12/CSE486/lecture13.pdf p14

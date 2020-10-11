@@ -1,6 +1,6 @@
-function estState = estInitialState(u,v,cameraPose,expState)
-% Estimate the initial target state based on one observation and the
-% trellis distance contained in expState
+function estState = estInitialState(u,v,depth,cameraPose,expState)
+% Estimate the initial target state based on one observation and a depth
+% value, if this is unkwnown the trellisDist in expState can be used
 
 %u,v are pixel values
 %cameraPose is the camera pose as [x,y,z,qw,qx,qy,qz]'
@@ -15,16 +15,13 @@ assert(v < expState.cameraParams.ImageSize(1));
 
 intrinsics = expState.cameraParams.Intrinsics;
 
-z = expState.trellisDist;
+z = depth;
 x = (u - intrinsics.PrincipalPoint(1))/intrinsics.FocalLength(1);
 x = x*z;
 y = (v - intrinsics.PrincipalPoint(2))/intrinsics.FocalLength(2);
 y = y*z;
 
 %Transform the camera points to world frame
-cameraPose = cameraPose';
-T = cameraPose(1:3);
-R = quat2rotm(cameraPose(4:7));
-estState = [x,y,z]*R + T;
+estState = fromCameraAxes(cameraPose,[x;y;z]);
 
 end

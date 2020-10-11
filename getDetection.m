@@ -4,7 +4,8 @@ function [u,v] = getDetection(cameraPose, expState)
 %generates a simulated camera detection in pixel coordinates (u,v). If the
 %target is not in frame, u = v = -1
 
-%cameraPose is [x,y,z,qw,qx,qy,qz] where [qw,qx,qy,qz] forms a quaternion
+%cameraPose is [x,y,z,qw,qx,qy,qz] where [qw,qx,qy,qz] forms a quaternion.
+%This is the transform from the world axes to the camera axes
 
 assert(size(cameraPose,1) == 7);
 assert(size(cameraPose,2) == 1);
@@ -14,30 +15,32 @@ assert(size(expState.targetPose,2) == 1);
 targetPose = expState.targetPose';
 cameraPose = cameraPose';
 
-translationVector = cameraPose(1:3);
-rotationMatrix = quat2rotm(cameraPose(4:7));
-translationVector = -1*(translationVector);
-rotationMatrix = rotationMatrix';
+T = cameraPose(1:3);
+R = quat2rotm(cameraPose(4:7));
+T = -1*(T);
+
+%Need to put the translation vector into the rotated camera frame
+T = T*R;
 
 %This takes the rotation / translation of world coordinates relative to the
 %image coords. Ie the inverse of the camera pose
-projection = worldToImage(expState.cameraParams,rotationMatrix,translationVector,targetPose);
+projection = worldToImage(expState.cameraParams,R,T,targetPose);
 u = projection(1);
 v = projection(2);
 
 ImSize = expState.cameraParams.ImageSize;
 %Check if it's in frame
 if(u >= ImSize(2)) || (v >= ImSize(1)) || (u <= 0) || (v <= 0)
-    disp("Target out of frame when generating detection");
+    fprintf("Target out of frame (%f,%f) when generating detection\n", u,v);
     u = -1;
     v = -1;
     return
 end
 
 %Check if it's within the camera min distance range
-camPoints = targetPose*rotationMatrix + translationVector;
+camPoints = toCameraAxes(cameraPose',targetPose');
 if((camPoints(3) < expState.minCamDistance) || (camPoints(3) > expState.maxCamDistance))
-    disp("Target out of range (too close/far/behind) of camera");
+    fprintf("Target at %f m out of range (too close/far/behind) of camera \n",camPoints(3));
     u = -1;
     v = -1;
     return

@@ -13,6 +13,7 @@ alignedCamPose = cameraPose;
 
 %If the camera is already at the goal
 if(norm(alignTo) < (1e-10))
+    disp("Camera already aligned");
     return;
 end
     
@@ -21,9 +22,8 @@ R_in = quat2rotm(cameraPose(4:7)');
 alignFrom = R_in*alignFrom; %Rotate a z vector to align to camera axis
 
 quatOut = vrrotvec(alignFrom,alignTo); %From the VR toolbox
-quatOut = axang2quat(quatOut);
+R_change = axang2rotm(quatOut);
 
-R_change = quat2rotm(quatOut);
 R = R_in*R_change; %Apply the required rotation to the current camera orientation
 
 alignedCamPose(4:7) = rotm2quat(R);
