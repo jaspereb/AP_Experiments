@@ -25,12 +25,13 @@ expState.Qz = 0.001;
 expState.Pxy = 0.05;
 expState.Pz = 0.7;
 expState.cameraParams = getCameraParams();
-expState.grabPose = [0;0;4;1;0;0;0]; %The final camera pose
-expState.initialPose = [0;0;0;1;0;0;0]; %(xyz position) and (wxyz quaternion)
-expState.initialPose = alignCamera(expState.initialPose, expState.grabPose(1:3),expState);
 expState.trellisDist = 4;
 expState.targetPose = [0.0;0.0;expState.trellisDist]; % True target position
+expState.grabPose = [expState.targetPose;1;0;0;0]; %The final camera pose
+expState.initialPose = [0;0;0;1;0;0;0]; %(xyz position) and (wxyz quaternion)
+expState.initialPose = alignCamera(expState.initialPose, expState.grabPose(1:3),expState);
 expState.targetZNoise = 0.25;
+expState.targetXYNoise = 0.1;
 expState.numPoses = 31; %Number of poses to generate on each path, inc initial pose. Must be odd
 expState.diagonalDist = 0.5; %Distance the diagonal path moves off straight
 expState.minCamDistance = 0.25; %Below this z range, detections will not be generated
@@ -64,6 +65,8 @@ K = [];
 %Check calcJac has returned a correct observation
 assert(zHat(1) == u);
 assert(zHat(2) == v);
+
+save('StartState.mat');
 
 % Straight Path Experiment
 straightPoses = getPosesStraight(cameraPose,expState);
