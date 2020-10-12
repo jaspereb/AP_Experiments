@@ -1,4 +1,0 @@
-function estState = estInitialState(u,v,expState)
-% Estimate the initial 
-
-end
