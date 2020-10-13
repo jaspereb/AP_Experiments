@@ -31,7 +31,7 @@ v = projection(2);
 ImSize = expState.cameraParams.ImageSize;
 %Check if it's in frame
 if(u >= ImSize(2)) || (v >= ImSize(1)) || (u <= 0) || (v <= 0)
-    fprintf("Target out of frame (%f,%f) when generating detection\n", u,v);
+%     fprintf("Target out of frame (%f,%f) when generating detection\n", u,v);
     u = -1;
     v = -1;
     return
@@ -40,7 +40,7 @@ end
 %Check if it's within the camera min distance range
 camPoints = toCameraAxes(cameraPose',targetPose');
 if((camPoints(3) < expState.minCamDistance) || (camPoints(3) > expState.maxCamDistance))
-    fprintf("Target at %f m out of range (too close/far/behind) of camera \n",camPoints(3));
+%     fprintf("Target at %f m out of range (too close/far/behind) of camera \n",camPoints(3));
     u = -1;
     v = -1;
     return

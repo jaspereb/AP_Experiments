@@ -17,7 +17,7 @@ intrinsics = expState.cameraParams.Intrinsics;
 [z,inFrame] = funct(state, cameraPose, expState, intrinsics);
 if(~inFrame)
     z = [-1,-1];
-    disp("CAUTION: Pixel outside frame when finding Jacobian");
+%     disp("CAUTION: Pixel outside frame when finding Jacobian");
 end
 
 cols = numel(state);
