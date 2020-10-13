@@ -17,6 +17,7 @@
 close all
 clearvars
 addpath('./Utils');
+addpath('./Utils/NodeFunctions');
 
 % Simulation Parameters
 expState.R = 4;

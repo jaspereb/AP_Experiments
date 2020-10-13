@@ -2,27 +2,49 @@
 %using offline FVI
 
 load('StartState.mat');
+[runState,x,C] = getRandTarget(expState);
+
+% Initialise the starting node
+openList{1} = createANode(expState.initialPose(1:3),P{1},[]);
+actionOffsets = getActionOffsets(runState);
+
+% Run FVI 
+for step = 2:expState.numPoses
+    fprintf("Building FVI tree at step %d of %d with max %d nodes at this level \n", ... 
+        step, expState.numPoses,size(openList{step-1},2)*size(actions));
+    
+    % For each open node
+    for currentIdx = 1:size(openList{step-1},2)
+        parentNode = openList{step-1}(currentIdx);
+        actions = getActions(parentNode, actionOffsets);
+        
+        % For each action in the action space
+        for actionIdx = 1:size(actions,1)
+            action = actions(actionIdx,:);
+            childNode = transitionState(parentNode, action);
+            
+            %Check if node is dominated and add it
+            openList = addNode(openList, step, childNode);
+            openList{step}(end+1) = childNode;
+            
+        end
+        
+    end
+    
+    
+    
+end
+
+
+
+
+
+
+
 
 % TO RUN FVI
-FOR THE CURRENT NODE IN TO-EXPAND SET
-DETERMINE THE ACTIONS SET
-PROPAGATE SIGMA
-REMOVE DOMINATED NODES
-ADD NEW NODES TO THE TO-EXPAND SET
-CONTINUE WHILE PATH < MAX LENGTH
-THEN CHOOSE THE BEST FINAL SIGMA PATH
 
 
-THEN EXPERIMENT 3 IS SIMILAR:
-DETERMINE THE ACTIONS SET
-PROPAGATE SIGMA
-REMOVE DOMINATED NODES
-ADD NEW NODES TO THE TO-EXPAND SET
-CONTINUE WHILE PATH < MAX LENGTH
-DETERMINE THE BEST FINAL SIGMA PATH
-CHOOSE THE NEXT ACTION IN THIS PATH
-RUN THE EKF UPDATE STEP FROM THAT POSITION
-RERUN FVI WITH NEW TARGET POSE ESTIMATE
 
 % Determine the best estimated path
 FVIPath = getFVIPath(cameraPose,expState);
