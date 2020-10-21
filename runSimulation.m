@@ -47,10 +47,10 @@ expState.printEKFStatus = false; %To print the result of each EKF run
 fprintf('Initial target pose is %f,%f,%f \n',expState.initialTargetPose(1),expState.initialTargetPose(2),expState.initialTargetPose(3));
 
 % Set up EKF for one target
-A = eye(3); %Assumes fixed targets, only position matters
-R = expState.R*eye(2);
-Q = [expState.Qxy, 0, 0; 0, expState.Qxy, 0; 0, 0, expState.Qz];
-P{1} = [expState.Pxy, 0, 0; 0, expState.Pxy, 0; 0, 0, expState.Pz];
+expState.A = eye(3); %Assumes fixed targets, only position matters
+expState.R = expState.R*eye(2);
+expState.Q = [expState.Qxy, 0, 0; 0, expState.Qxy, 0; 0, 0, expState.Qz];
+expState.P{1} = [expState.Pxy, 0, 0; 0, expState.Pxy, 0; 0, 0, expState.Pz];
 functH = @ObsFunction;
 cameraPose = expState.initialPose;
 

@@ -17,7 +17,7 @@ if(expState.showFigs)
 end
 for run = 1:expState.numRuns
     [runState,x,C] = getRandTarget(expState);
-    [x_straight,P_straight,z_straight] = runEKF(straightPoses,runState,functH,x,Q,R,A,K,C,P);
+    [x_straight,P_straight,z_straight] = runEKF(straightPoses,runState,functH,x,K,C);
     straightResults.x{run} = x_straight;
     straightResults.P{run} = P_straight;
     straightResults.z{run} = z_straight;
@@ -38,7 +38,7 @@ if(expState.showFigs)
 end
 for run = 1:expState.numRuns
     [runState,x,C] = getRandTarget(expState);
-    [x_diagonal,P_diagonal,z_diagonal] = runEKF(diagonalPoses,runState,functH,x,Q,R,A,K,C,P);
+    [x_diagonal,P_diagonal,z_diagonal] = runEKF(diagonalPoses,runState,functH,x,K,C);
     diagonalResults.x{run} = x_diagonal;
     diagonalResults.P{run} = P_diagonal;
     diagonalResults.z{run} = z_diagonal;

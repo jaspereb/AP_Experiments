@@ -1,8 +1,13 @@
-function [x,P,obs] = runEKF(poses,expState,functH,x,Q,R,A,K,C,P)
+function [x,P,obs] = runEKF(poses,expState,functH,x,K,C)
 %RUNEKF takes the camera poses list, experiment state, obeservation
 %function handle and EKF matrices. Runs an EKF filter over the simulated
 %camera obs and returns the state estimate over time along with state covar
 %matrix P
+
+A = expState.A;
+P = expState.P;
+Q = expState.Q;
+R = expState.R;
 
 for idx = 1:size(poses,2)
     time = idx + 1; %Time starts from 2

@@ -1,6 +1,8 @@
 %Experiment 2 generates an estimate from 1000 runs of the best path found
 %using offline FVI
 
+clearvars openList 
+
 load('StartState.mat');
 [runState,x,C] = getRandTarget(expState);
 
@@ -11,7 +13,7 @@ actionOffsets = getActionOffsets(runState);
 % Run FVI 
 for step = 2:expState.numPoses
     fprintf("Building FVI tree at step %d of %d with max %d nodes at this level \n", ... 
-        step, expState.numPoses,size(openList{step-1},2)*size(actions));
+        step, expState.numPoses,size(openList{step-1},2)*5);
     
     % For each open node
     for currentIdx = 1:size(openList{step-1},2)
@@ -21,11 +23,10 @@ for step = 2:expState.numPoses
         % For each action in the action space
         for actionIdx = 1:size(actions,1)
             action = actions(actionIdx,:);
-            childNode = transitionState(parentNode, action);
+            childNode = transitionState(parentNode, action, runState);
             
             %Check if node is dominated and add it
             openList = addNode(openList, step, childNode);
-            openList{step}(end+1) = childNode;
             
         end
         
