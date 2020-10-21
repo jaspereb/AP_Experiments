@@ -1,8 +1,9 @@
-function node = createANode(x,Sigma,parent,visible,p,g,h)
+function node = createANode(x,y,Sigma,parent,visible,p,g,h)
 %CREATEANODE Creates a new node object
 
 node = [];
-node.x = x;
+node.x = x; %Camera pose
+node.y = y; %Target pose estimate
 node.Sigma = Sigma;
 node.parent = parent; %Another node object
 
