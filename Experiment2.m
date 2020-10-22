@@ -32,31 +32,30 @@ for step = 2:expState.numPoses
             openList = addNode(openList, step, childNode);
             
         end
-        
     end
-    
-    
-    
 end
 
+save('FVI_Tree.mat');
 
+% Choose the best path
+load('FVI_Tree.mat');
 
+traces = [];
+for idx = 1:size(openList{end},2)
+   Sigma = openList{end}(idx).Sigma; 
+   traces(idx) = trace(Sigma);
+end
 
+%For testing
+% histogram(traces);
 
-
-
-
-% TO RUN FVI
-
-
-
-% Determine the best estimated path
-FVIPath = getFVIPath(cameraPose,expState);
+[~,idx] = min(traces);
+[path,cost,diagonals] = constructPath(openList{end}(idx),runState);
 
 % Run this 1000 times
-expState.currExpName = 'FVI Offline Path';
-if(expState.showFigs)
-    fig_AP = figure(3);
-    plotState(APPoses, expState, fig_AP);
-end
-[x_AP,P_AP] = runEKF(FVIPath,expState,functH,x,Q,R,A,K,C,P);
+% expState.currExpName = 'FVI Offline Path';
+% if(expState.showFigs)
+%     fig_AP = figure(3);
+%     plotState(APPoses, expState, fig_AP);
+% end
+% [x_AP,P_AP] = runEKF(FVIPath,expState,functH,x,Q,R,A,K,C,P);
