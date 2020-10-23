@@ -6,7 +6,7 @@
 
 clearvars  
 load('StartState.mat');
-expState.currExpName = 'FVI_Offline';
+expState.currExpName = 'FVI Offline';
 
 for run = 1:expState.numRuns
     [runState,x,C] = getRandTarget(expState);
@@ -59,9 +59,9 @@ for run = 1:expState.numRuns
     
     %Run the EKF
     [x_FVI_grasp_offline,P_FVI_grasp_offline,z_FVI_grasp_offline] = runEKF(graspPath,runState,functH,x,K,C);
-    FVIofflineGraspResults.x{run} = x_FVI_grasp_offline;
-    FVIofflineGraspResults.P{run} = P_FVI_grasp_offline;
-    FVIofflineGraspResults.z{run} = z_FVI_grasp_offline;
+    FVIofflineGraspResults.x{run} = x_FVI_grasp_offline(:,end);
+    FVIofflineGraspResults.P{run} = P_FVI_grasp_offline{1,end};
+    FVIofflineGraspResults.z{run} = z_FVI_grasp_offline(:,end);
     FVIofflineGraspResults.targetPose = runState.targetPose;
     if(mod(run,50) == 0)
         fprintf('\t \t \t \t \t \t \t Executing run %d of %d \n',run, expState.numRuns);
@@ -69,16 +69,18 @@ for run = 1:expState.numRuns
     
     %Run the EKF
     [x_FVI_view_offline,P_FVI_view_offline,z_FVI_view_offline] = runEKF(viewPath,runState,functH,x,K,C);
-    FVIofflineViewResults.x{run} = x_FVI_view_offline;
-    FVIofflineViewResults.P{run} = P_FVI_view_offline;
-    FVIofflineViewResults.z{run} = z_FVI_view_offline;
+    FVIofflineViewResults.x{run} = x_FVI_view_offline(:,end); SHOULD THIS BE :,end??
+    FVIofflineViewResults.P{run} = P_FVI_view_offline{1,end};
+    FVIofflineViewResults.z{run} = z_FVI_view_offline(:,end);
     FVIofflineViewResults.targetPose = runState.targetPose;
     if(mod(run,50) == 0)
         fprintf('\t \t \t \t \t \t \t Executing run %d of %d \n',run, expState.numRuns);
     end
 end
 
+disp("Calculating results for end pose constrained path");
 FVIofflineGraspResults = calculateResults(FVIofflineGraspResults,expState);
+disp("Calculating results for non-constrained path");
 FVIofflineViewResults = calculateResults(FVIofflineViewResults,expState);
 
 if(runState.showFigs)

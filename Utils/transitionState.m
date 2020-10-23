@@ -13,7 +13,7 @@ W = expState.Q;
 V = expState.R;
 intrinsics = expState.cameraParams.Intrinsics;
 
-if(strcmp(expState.currExpName,'FVI_Offline'))
+if(strcmp(expState.currExpName,'FVI Offline'))
     y = parentNode.y;
 else
     print("NOT IMPLEMENTED!! Need to run EKF step here");

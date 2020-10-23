@@ -6,9 +6,9 @@ function results = calculateResults(results, expState)
 %each column a timestep
 for row = 1:size(results.x,2)
     for col = 1:size(results.x{1},2)
-        results.xErrorMat(row,col) = results.targetPose(1) - results.x{row}(1,col);
-        results.yErrorMat(row,col) = results.targetPose(2) - results.x{row}(2,col);
-        results.zErrorMat(row,col) = results.targetPose(3) - results.x{row}(3,col);
+        results.xErrorMat(row,col) = results.x{row}(1,col) - results.targetPose(1);
+        results.yErrorMat(row,col) = results.x{row}(2,col) - results.targetPose(2);
+        results.zErrorMat(row,col) = results.x{row}(3,col) - results.targetPose(3);
     end
 end
 
