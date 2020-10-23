@@ -37,31 +37,55 @@ for run = 1:expState.numRuns
         end
     end
     
-    %Find the best path
+    %Find the best path which ends at the target, for grasping
+    %Because the domination rule gets applied, only one path per physical
+    %end node exists
+    for n = 1:size(openList{end},2)
+       lastPoses(:,n) = openList{end}(n).x;
+    end
+    lastDists = lastPoses - x(:,1);
+    lastDists = sqrt(sum(lastDists.^2,1));
+    [~,idx] = min(lastDists);
+    [graspPath,graspCost,graspDiagonals,graspVisibilities] = constructPath(openList{end}(idx),runState);
+    
+    %Find the best path which ends anywhere, for viewing
     traces = [];
     for idx = 1:size(openList{end},2)
        Sigma = openList{end}(idx).Sigma; 
        traces(idx) = trace(Sigma);
     end
-    
     [~,idx] = min(traces);
-    [path,cost,diagonals,visibilities] = constructPath(openList{end}(idx),runState);
+    [viewPath,cost,diagonals,visibilities] = constructPath(openList{end}(idx),runState);
     
     %Run the EKF
-    [x_FVI_offline,P_FVI_offline,z_FVI_offline] = runEKF(path,runState,functH,x,K,C);
-    FVIofflineResults.x{run} = x_FVI_offline;
-    FVIofflineResults.P{run} = P_FVI_offline;
-    FVIofflineResults.z{run} = z_FVI_offline;
-    FVIofflineResults.targetPose = runState.targetPose;
+    [x_FVI_grasp_offline,P_FVI_grasp_offline,z_FVI_grasp_offline] = runEKF(graspPath,runState,functH,x,K,C);
+    FVIofflineGraspResults.x{run} = x_FVI_grasp_offline;
+    FVIofflineGraspResults.P{run} = P_FVI_grasp_offline;
+    FVIofflineGraspResults.z{run} = z_FVI_grasp_offline;
+    FVIofflineGraspResults.targetPose = runState.targetPose;
+    if(mod(run,50) == 0)
+        fprintf('\t \t \t \t \t \t \t Executing run %d of %d \n',run, expState.numRuns);
+    end
+    
+    %Run the EKF
+    [x_FVI_view_offline,P_FVI_view_offline,z_FVI_view_offline] = runEKF(viewPath,runState,functH,x,K,C);
+    FVIofflineViewResults.x{run} = x_FVI_view_offline;
+    FVIofflineViewResults.P{run} = P_FVI_view_offline;
+    FVIofflineViewResults.z{run} = z_FVI_view_offline;
+    FVIofflineViewResults.targetPose = runState.targetPose;
     if(mod(run,50) == 0)
         fprintf('\t \t \t \t \t \t \t Executing run %d of %d \n',run, expState.numRuns);
     end
 end
 
-FVIofflineResults = calculateResults(FVIofflineResults,expState);
+FVIofflineGraspResults = calculateResults(FVIofflineGraspResults,expState);
+FVIofflineViewResults = calculateResults(FVIofflineViewResults,expState);
 
 if(runState.showFigs)
-    fig_fvi = figure();
-    plotFVIPath(path, visibilities, openList{end}(idx).y, runState, fig_fvi);
-    disp("Displaying example FVI path");
+    fig_fvi_grasp = figure();
+    plotFVIPath(graspPath, visibilities, openList{end}(idx).y, runState, fig_fvi_grasp);
+    disp("Displaying example FVI grasping path");
+    fig_fvi_view = figure();
+    plotFVIPath(viewPath, visibilities, openList{end}(idx).y, runState, fig_fvi_view);
+    disp("Displaying example FVI viewing path");
 end
