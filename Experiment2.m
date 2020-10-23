@@ -10,13 +10,13 @@ expState.currExpName = 'FVI';
 [runState,x,C] = getRandTarget(expState);
 
 % Initialise the starting node
-openList{1} = createANode(expState.initialPose(1:3),x(:,1),expState.P{1},[]);
+openList{1} = createANode(runState.initialPose(1:3),x(:,1),runState.P{1},[]);
 actionOffsets = getActionOffsets(runState);
 
 % Run FVI 
-for step = 2:expState.numPoses
+for step = 2:runState.numPoses
     fprintf("Building FVI tree at step %d of %d with max %d nodes at this level \n", ... 
-        step, expState.numPoses,size(openList{step-1},2)*5);
+        step, runState.numPoses,size(openList{step-1},2)*5);
     
     % For each open node
     for currentIdx = 1:size(openList{step-1},2)
@@ -50,7 +50,12 @@ end
 % histogram(traces);
 
 [~,idx] = min(traces);
-[path,cost,diagonals] = constructPath(openList{end}(idx),runState);
+[path,cost,diagonals,visibilities] = constructPath(openList{end}(idx),runState);
+% if(runState.showFigs)
+    fig_fvi = figure();
+    plotFVIPath(path, visibilities, openList{end}(idx).y, runState, fig_fvi);
+% end
+STILL SOME ERROR HERE AROUND CAMERA ALIGNMENT, OR DISPLAY
 
 % Run this 1000 times
 % expState.currExpName = 'FVI Offline Path';

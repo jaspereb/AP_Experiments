@@ -20,7 +20,7 @@ else
 end
 
 % Transition Sigma, Equation 6 in Atanasov 2014
-cameraPose = [x;0;0;0;1];
+cameraPose = [x;1;0;0;0];
 cameraPose = alignCamera(cameraPose,y,expState);
 
 p = cameraPose(1:3);

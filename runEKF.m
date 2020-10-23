@@ -49,7 +49,7 @@ if(expState.printEKFStatus)
         expState.currExpName,expState.targetPose(1)-x(1,end), ...
         expState.targetPose(2)-x(2,end),expState.targetPose(3)-x(3,end));
 end
-if(expState.showFigs)
+if(expState.showEKFFigs)
     plotEstimates(x,expState);
 end
 end
