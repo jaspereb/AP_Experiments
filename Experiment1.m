@@ -27,7 +27,7 @@ if(expState.showFigs)
     plotState(straightPoses, runState, fig_straight);
 end
 
-calculateResults(straightResults,expState);
+straightResults = calculateResults(straightResults,expState);
 
 % Diagonal Path Experiment
 diagonalPoses = getPosesDiagonal(cameraPose,expState);
@@ -48,5 +48,4 @@ if(expState.showFigs)
     plotState(diagonalPoses, runState, fig_diag);
 end
 
-save('sampleResults.mat');
-calculateResults(diagonalResults,expState);
+diagonalResults = calculateResults(diagonalResults,expState);

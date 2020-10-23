@@ -15,7 +15,7 @@ for idx = 1:size(poses,2)
     
     cameraPose = poses(:,idx);
     if(isequal(cameraPose,expState.grabPose))
-        print("Reached target");
+        disp("Reached target");
         break;
     end
     

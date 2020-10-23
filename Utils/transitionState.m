@@ -13,7 +13,7 @@ W = expState.Q;
 V = expState.R;
 intrinsics = expState.cameraParams.Intrinsics;
 
-if(strcmp(expState.currExpName,'FVI'))
+if(strcmp(expState.currExpName,'FVI_Offline'))
     y = parentNode.y;
 else
     print("NOT IMPLEMENTED!! Need to run EKF step here");
@@ -33,6 +33,10 @@ if(min([u,v]) <= 0) || (u >= intrinsics.ImageSize(2)) || (v >= intrinsics.ImageS
     visible = false;
 else
     visible = true;
+end
+
+if((camPoints(3) < expState.minCamDistance) || (camPoints(3) > expState.maxCamDistance))
+    visible = false;
 end
 
 
