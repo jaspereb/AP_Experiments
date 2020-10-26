@@ -9,3 +9,4 @@ A camera moves through space to localise a single target in 3D simulating a frui
 
 It requires some matlab toolboxes, including VR and Computer Vision. 
 
+Start by running `buildExperiment.m`
