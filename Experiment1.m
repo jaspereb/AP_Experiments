@@ -17,7 +17,7 @@ for run = 1:expState.numRuns
     straightResults.x{run} = x_straight;
     straightResults.P{run} = P_straight;
     straightResults.z{run} = z_straight;
-    straightResults.targetPose = runState.targetPose;
+    straightResults.targetPose{run} = runState.targetPose;
     if(mod(run,50) == 0)
         fprintf('\t \t \t \t \t \t \t Executing run %d of %d \n',run, expState.numRuns);
     end
@@ -38,7 +38,7 @@ for run = 1:expState.numRuns
     diagonalResults.x{run} = x_diagonal;
     diagonalResults.P{run} = P_diagonal;
     diagonalResults.z{run} = z_diagonal;
-    diagonalResults.targetPose = runState.targetPose;
+    diagonalResults.targetPose{run} = runState.targetPose;
     if(mod(run,50) == 0)
         fprintf('\t \t \t \t \t \t \t Executing run %d of %d \n',run, expState.numRuns);
     end
@@ -49,3 +49,4 @@ if(expState.showFigs)
 end
 
 diagonalResults = calculateResults(diagonalResults,expState);
+save('Exp1Results.mat');

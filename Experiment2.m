@@ -91,3 +91,5 @@ if(runState.showFigs)
     plotFVIPath(viewPath, visibilities, openList{end}(idx).y, runState, fig_fvi_view);
     disp("Displaying example FVI viewing path");
 end
+
+save('Exp2Results.mat');

@@ -42,6 +42,11 @@ for idx = 1:size(poses,2)
     P{time} = P{time} - K{time}*C{time}*P{time};
 end
 
+%Remove the last element because the state is already at the target
+x(:,end) = [];
+P = P(1:end-1);
+obs(:,end) = [];
+
 if(expState.printEKFStatus)
     fprintf('Estimated target pose from %s is %f,%f,%f \n', ...
         expState.currExpName,x(1,end),x(2,end),x(3,end));

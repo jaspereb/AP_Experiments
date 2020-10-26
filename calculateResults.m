@@ -2,13 +2,26 @@ function results = calculateResults(results, expState)
 %CALCULATERESULTS Populates the averaged fields of the resultsStruct using
 %the data in that and prints the key experiment results values. 
 
+% The x,P,z fields of results must be cell arrays, one cell per full ekf
+% run. Within each cell is a matrix of shape MxN where N is the number of
+% steps and M is the number of states in that matrix (3 for x, 2 for z).
+% For P, each cell contains a further array of N cells where each is a 3x3
+% matrix.
+
 %Construct the state estimate error matrix with each row being an EKF run and
 %each column a timestep
-for row = 1:size(results.x,2)
-    for col = 1:size(results.x{1},2)
-        results.xErrorMat(row,col) = results.x{row}(1,col) - results.targetPose(1);
-        results.yErrorMat(row,col) = results.x{row}(2,col) - results.targetPose(2);
-        results.zErrorMat(row,col) = results.x{row}(3,col) - results.targetPose(3);
+
+numRuns = size(results.x,2);
+numTimesteps = size(results.x{1},2);
+
+assert(numRuns == expState.numRuns);
+assert(numTimesteps == expState.numPoses);
+
+for run = 1:numRuns
+    for timestep = 1:numTimesteps
+        results.xErrorMat(run,timestep) = results.x{run}(1,timestep) - results.targetPose{run}(1);
+        results.yErrorMat(run,timestep) = results.x{run}(2,timestep) - results.targetPose{run}(2);
+        results.zErrorMat(run,timestep) = results.x{run}(3,timestep) - results.targetPose{run}(3);
     end
 end
 
@@ -17,45 +30,52 @@ results.xErrorMean = mean(results.xErrorMat,1);
 results.yErrorMean = mean(results.yErrorMat,1);
 results.zErrorMean = mean(results.zErrorMat,1);
 
-results.xErrorSingleMean = mean(results.xErrorMean);
-results.yErrorSingleMean = mean(results.yErrorMean);
-results.zErrorSingleMean = mean(results.zErrorMean);
+results.xErrorFinalMean = results.xErrorMean(end);
+results.yErrorFinalMean = results.yErrorMean(end);
+results.zErrorFinalMean = results.zErrorMean(end);
 
 %Calculate errorStdDev
 results.xErrorStd = std(results.xErrorMat);
 results.yErrorStd = std(results.yErrorMat);
 results.zErrorStd = std(results.zErrorMat);
 
-results.xErrorSingleStd = std(results.xErrorMat(:));
-results.yErrorSingleStd = std(results.yErrorMat(:));
-results.zErrorSingleStd = std(results.zErrorMat(:));
+results.xErrorFinalStd = std(results.xErrorMat(:,end));
+results.yErrorFinalStd = std(results.yErrorMat(:,end));
+results.zErrorFinalStd = std(results.zErrorMat(:,end));
+
+%Final sigma trace and the std of this
+for run = 1:numRuns
+    finalTraces(run) = trace(results.P{run}{numTimesteps});
+end
+results.traceFinalMean = mean(finalTraces);
+results.traceFinalStd = std(finalTraces);
 
 %Calculate elementwise mean of sigma for each timestep
-for step = 1:size(results.x{1},2)
-    clearvars sigmaMean traces
-    sigmaMean{step} = zeros(3,3);
-    for run = 1:size(results.P,2)
-        sigmaMean{step} = sigmaMean{step} + results.P{run}{step};
-        traces(run) = trace(results.P{run}{end});
+for timestep = 1:numTimesteps
+    sigmaMean = zeros(3,3);
+    for run = 1:numRuns
+        sigmaMean = sigmaMean + results.P{run}{timestep}; %sigma mean over all runs
+        traces(run,timestep) = trace(results.P{run}{timestep});
     end
-    results.sigmaMean{step} = sigmaMean{step}./size(results.P,2);
+    results.sigmaMean{timestep} = sigmaMean./numRuns;
     
-    results.xCovMean(step) = results.sigmaMean{step}(1,1);
-    results.yCovMean(step) = results.sigmaMean{step}(2,2);
-    results.zCovMean(step) = results.sigmaMean{step}(3,3);
+    results.xCovMean(timestep) = results.sigmaMean{timestep}(1,1);
+    results.yCovMean(timestep) = results.sigmaMean{timestep}(2,2);
+    results.zCovMean(timestep) = results.sigmaMean{timestep}(3,3);
     
-    results.traceMean(step) = trace(results.sigmaMean{step});
-    results.traceStd(step) = std(traces);
+    results.traceStd(timestep) = std(traces(:,timestep));
+    results.traceMean(timestep) = mean(traces(:,timestep));
 end
-results.traceSingleMean = mean(results.traceMean);
+
 
 fprintf("Mean final errors for %s experiment are: (%f, %f, %f)m \n", ... 
-    expState.currExpName, results.xErrorSingleMean, results.yErrorSingleMean, ... 
-    results.zErrorSingleMean);
+    expState.currExpName, results.xErrorFinalMean, results.yErrorFinalMean, ... 
+    results.zErrorFinalMean);
 fprintf("With std deviations: (%f, %f, %f)m \n", ... 
-    results.xErrorSingleStd, results.yErrorSingleStd, ... 
-    results.zErrorSingleStd);
-fprintf("And final sigma trace: %f \n", results.traceSingleMean);
+    results.xErrorFinalStd, results.yErrorFinalStd, ... 
+    results.zErrorFinalStd);
+fprintf("And final sigma trace: %f \n", results.traceFinalMean);
+fprintf("With std deviation: %f \n", results.traceFinalStd);
 
 if(expState.plotResults)
     %Show the mean error and std plots over time
@@ -73,7 +93,7 @@ if(expState.plotResults)
     figure();
     hold on
     title(strcat(expState.currExpName, ' Sigma Trace'));
-    errorbar(1:size(results.traceMean,2),results.traceMean,results.traceStd,'r');
+    errorbar(1:numTimesteps,results.traceMean,results.traceStd,'r');
     xlabel('Filter Timestep');
     grid on
     
@@ -81,9 +101,9 @@ if(expState.plotResults)
     figure();
     hold on
     title(strcat(expState.currExpName, ' State Covariance Components'));
-    plot(1:size(results.xCovMean,2),results.xCovMean,'r');
-    plot(1:size(results.yCovMean,2),results.yCovMean,'g');
-    plot(1:size(results.zCovMean,2),results.zCovMean,'b');
+    plot(1:numTimesteps,results.xCovMean,'r');
+    plot(1:numTimesteps,results.yCovMean,'g');
+    plot(1:numTimesteps,results.zCovMean,'b');
     xlabel('Filter Timestep');
     legend('X','Y','Z');
     grid on
