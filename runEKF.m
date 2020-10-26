@@ -42,7 +42,7 @@ for idx = 1:size(poses,2)
     P{time} = P{time} - K{time}*C{time}*P{time};
 end
 
-%Remove the last element because the state is already at the target
+%Remove the last element because the camera is already at the target
 x(:,end) = [];
 P = P(1:end-1);
 obs(:,end) = [];

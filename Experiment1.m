@@ -49,4 +49,5 @@ if(expState.showFigs)
 end
 
 diagonalResults = calculateResults(diagonalResults,expState);
+clearvars fig_diag fig_straight
 save('Exp1Results.mat');

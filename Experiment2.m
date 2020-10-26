@@ -59,37 +59,42 @@ for run = 1:expState.numRuns
     
     %Run the EKF
     [x_FVI_grasp_offline,P_FVI_grasp_offline,z_FVI_grasp_offline] = runEKF(graspPath,runState,functH,x,K,C);
-    FVIofflineGraspResults.x{run} = x_FVI_grasp_offline(:,end);
-    FVIofflineGraspResults.P{run} = P_FVI_grasp_offline{1,end};
-    FVIofflineGraspResults.z{run} = z_FVI_grasp_offline(:,end);
-    FVIofflineGraspResults.targetPose = runState.targetPose;
+    FVIofflineGraspResults.x{run} = x_FVI_grasp_offline;
+    FVIofflineGraspResults.P{run} = P_FVI_grasp_offline;
+    FVIofflineGraspResults.z{run} = z_FVI_grasp_offline;
+    FVIofflineGraspResults.targetPose{run} = runState.targetPose;
     if(mod(run,50) == 0)
         fprintf('\t \t \t \t \t \t \t Executing run %d of %d \n',run, expState.numRuns);
     end
     
     %Run the EKF
     [x_FVI_view_offline,P_FVI_view_offline,z_FVI_view_offline] = runEKF(viewPath,runState,functH,x,K,C);
-    FVIofflineViewResults.x{run} = x_FVI_view_offline(:,end); SHOULD THIS BE :,end??
-    FVIofflineViewResults.P{run} = P_FVI_view_offline{1,end};
-    FVIofflineViewResults.z{run} = z_FVI_view_offline(:,end);
-    FVIofflineViewResults.targetPose = runState.targetPose;
+    FVIofflineViewResults.x{run} = x_FVI_view_offline;
+    FVIofflineViewResults.P{run} = P_FVI_view_offline;
+    FVIofflineViewResults.z{run} = z_FVI_view_offline;
+    FVIofflineViewResults.targetPose{run} = runState.targetPose;
     if(mod(run,50) == 0)
         fprintf('\t \t \t \t \t \t \t Executing run %d of %d \n',run, expState.numRuns);
     end
 end
 
 disp("Calculating results for end pose constrained path");
+expState.currExpName = 'FVI Offline Grasp Path';
 FVIofflineGraspResults = calculateResults(FVIofflineGraspResults,expState);
 disp("Calculating results for non-constrained path");
+expState.currExpName = 'FVI Offline View Path';
 FVIofflineViewResults = calculateResults(FVIofflineViewResults,expState);
 
 if(runState.showFigs)
     fig_fvi_grasp = figure();
+    expState.currExpName = 'FVI Offline Grasp Path';
     plotFVIPath(graspPath, visibilities, openList{end}(idx).y, runState, fig_fvi_grasp);
     disp("Displaying example FVI grasping path");
     fig_fvi_view = figure();
+    expState.currExpName = 'FVI Offline View Path';
     plotFVIPath(viewPath, visibilities, openList{end}(idx).y, runState, fig_fvi_view);
     disp("Displaying example FVI viewing path");
 end
 
+clearvars fig_fvi_grasp fig_fvi_view
 save('Exp2Results.mat');

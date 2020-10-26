@@ -11,21 +11,39 @@ Sigma = parentNode.Sigma;
 A = expState.A;
 W = expState.Q;
 V = expState.R;
+functH = @ObsFunction;
 intrinsics = expState.cameraParams.Intrinsics;
 
-if(strcmp(expState.currExpName,'FVI Offline'))
-    y = parentNode.y;
-else
-    print("NOT IMPLEMENTED!! Need to run EKF step here");
-end
-
-% Transition Sigma, Equation 6 in Atanasov 2014
+%Turn node state into camera pose
 cameraPose = [x;1;0;0;0];
-cameraPose = alignCamera(cameraPose,y,expState);
-
+cameraPose = alignCamera(cameraPose,parentNode.y,expState);
 p = cameraPose(1:3);
 R = quat2rotm(cameraPose(4:7)');
 
+if(strcmp(expState.currExpName,'FVI Offline'))
+    y = parentNode.y;
+elseif(strcmp(expState.currExpName,'FVI Online'))
+    %Run EKF predict & update step for the target state (x in EKF, y in
+    %nodes)
+    [zHat,C] = calcJac(functH, parentNode.y, cameraPose, expState);
+    [u,v] = getDetection(cameraPose, expState);
+    z = [u;v];
+    
+    %Some mismatch in notation between this fn and runEKF
+    P = A*parentNode.Sigma*A' + W; 
+    
+    K = P*C'*inv(V + C*P*C');
+    
+    yPrime = A*parentNode.y; %Predict target state to current timestep
+    yPrime = yPrime + K*(zHat - z);
+    
+    y = yPrime;
+else
+    print("ERROR: Unknown experiment name");
+    return;
+end
+
+% Transition Sigma, Equation 6 in Atanasov 2014
 camPoints = toCameraAxes(cameraPose,y);
 u = intrinsics.FocalLength(1)*(camPoints(1)/camPoints(3)) + intrinsics.PrincipalPoint(1);
 v = intrinsics.FocalLength(2)*(camPoints(2)/camPoints(3)) + intrinsics.PrincipalPoint(2);
