@@ -49,5 +49,10 @@ if(expState.showFigs)
 end
 
 diagonalResults = calculateResults(diagonalResults,expState);
+
 clearvars fig_diag fig_straight
 save('Exp1Results.mat');
+
+clearvars
+FigList = findobj(allchild(0), 'flat', 'Type', 'figure');
+save('Exp1Figures.mat');

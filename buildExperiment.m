@@ -41,7 +41,7 @@ expState.imageNoise = 2; %Sigma for pixel noise added to detections
 expState.showFigs = true; %Whether to show camera paths for debugging
 expState.showEKFFigs = false; %Whether to show and state estimates for every EKF run while debugging
 expState.plotResults = true; %Whether to plot experiment results (sigma over time)
-expState.numRuns = 5;
+expState.numRuns = 100;
 expState.printEKFStatus = false; %To print the result of each EKF run
 
 % expState.targetPose(3) = expState.initialTargetPose(3) + 0.3; %For testing
@@ -60,8 +60,8 @@ K = [];
 
 save('StartState.mat');
 
-% run Experiment1
+run Experiment1
 
-% run Experiment2
+run Experiment2
 
-% tilefigs
+run Experiment3

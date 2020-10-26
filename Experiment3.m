@@ -5,6 +5,8 @@
 %Within the EKF x referes to target pose
 
 clearvars  
+close all
+
 load('StartState.mat');
 expState.currExpName = 'FVI Online';
 
@@ -98,3 +100,7 @@ end
 
 clearvars fig_fvi_grasp fig_fvi_view
 save('Exp3Results.mat');
+
+clearvars
+FigList = findobj(allchild(0), 'flat', 'Type', 'figure');
+save('Exp3Figures.mat');
