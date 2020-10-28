@@ -1,5 +1,5 @@
-%Experiment 3 generates an estimate from 1000 runs of the best path found
-%using online FVI
+%Experiment 4 generates an estimate from 1000 runs of the best path found
+%using offline FVI with a weighted covariance cost function
 
 %NOTE: within nodes, x refers to the camera pose and y to the target pose.
 %Within the EKF x referes to target pose
@@ -8,8 +8,8 @@ clearvars
 close all
 
 load('StartState.mat');
-expState.currExpName = 'FVI Online';
-expState.costFn = 'Trace';
+expState.currExpName = 'FVI Offline';
+expState.costFn = 'Weighted Trace';
 for run = 1:expState.numRuns
     [runState,x,C] = getRandTarget(expState);
     
@@ -52,56 +52,55 @@ for run = 1:expState.numRuns
     [graspPath,graspCost,graspDiagonals,graspVisibilities] = constructPath(openList{end}(idx),runState);
     
     %Find the best path which ends anywhere, for viewing
-    traces = [];
+    costs = [];
     for idx = 1:size(openList{end},2)
-       Sigma = openList{end}(idx).Sigma; 
-       traces(idx) = trace(Sigma);
+       costs(idx) = openList{end}(idx).Cost; 
     end
-    [~,idx] = min(traces);
+    [~,idx] = min(costs);
     [viewPath,cost,diagonals,visibilities] = constructPath(openList{end}(idx),runState);
     
     %Run the EKF
-    [x_FVI_grasp_online,P_FVI_grasp_online,z_FVI_grasp_online] = runEKF(graspPath,runState,functH,x,K,C);
-    FVIonlineGraspResults.x{run} = x_FVI_grasp_online;
-    FVIonlineGraspResults.P{run} = P_FVI_grasp_online;
-    FVIonlineGraspResults.z{run} = z_FVI_grasp_online;
-    FVIonlineGraspResults.targetPose{run} = runState.targetPose;
+    [x_FVI_grasp_offline,P_FVI_grasp_offline,z_FVI_grasp_offline] = runEKF(graspPath,runState,functH,x,K,C);
+    FVIofflineGraspResults.x{run} = x_FVI_grasp_offline;
+    FVIofflineGraspResults.P{run} = P_FVI_grasp_offline;
+    FVIofflineGraspResults.z{run} = z_FVI_grasp_offline;
+    FVIofflineGraspResults.targetPose{run} = runState.targetPose;
     if(mod(run,50) == 0)
         fprintf('\t \t \t \t \t \t \t Executing run %d of %d \n',run, expState.numRuns);
     end
     
     %Run the EKF
-    [x_FVI_view_online,P_FVI_view_online,z_FVI_view_online] = runEKF(viewPath,runState,functH,x,K,C);
-    FVIonlineViewResults.x{run} = x_FVI_view_online;
-    FVIonlineViewResults.P{run} = P_FVI_view_online;
-    FVIonlineViewResults.z{run} = z_FVI_view_online;
-    FVIonlineViewResults.targetPose{run} = runState.targetPose;
+    [x_FVI_view_offline,P_FVI_view_offline,z_FVI_view_offline] = runEKF(viewPath,runState,functH,x,K,C);
+    FVIofflineViewResults.x{run} = x_FVI_view_offline;
+    FVIofflineViewResults.P{run} = P_FVI_view_offline;
+    FVIofflineViewResults.z{run} = z_FVI_view_offline;
+    FVIofflineViewResults.targetPose{run} = runState.targetPose;
     if(mod(run,50) == 0)
         fprintf('\t \t \t \t \t \t \t Executing run %d of %d \n',run, expState.numRuns);
     end
 end
 
 disp("Calculating results for end pose constrained path");
-expState.currExpName = 'FVI Online Grasp Path';
-FVIonlineGraspResults = calculateResults(FVIonlineGraspResults,expState);
+expState.currExpName = 'FVI Offline Grasp Path';
+FVIofflineGraspResults = calculateResults(FVIofflineGraspResults,expState);
 disp("Calculating results for non-constrained path");
-expState.currExpName = 'FVI Online View Path';
-FVIonlineViewResults = calculateResults(FVIonlineViewResults,expState);
+expState.currExpName = 'FVI Offline View Path';
+FVIofflineViewResults = calculateResults(FVIofflineViewResults,expState);
 
 if(runState.showFigs)
     fig_fvi_grasp = figure();
-    expState.currExpName = 'FVI Online Grasp Path';
+    expState.currExpName = 'FVI Offline Grasp Path';
     plotFVIPath(graspPath, visibilities, openList{end}(idx).y, runState, fig_fvi_grasp);
     disp("Displaying example FVI grasping path");
     fig_fvi_view = figure();
-    expState.currExpName = 'FVI Online View Path';
+    expState.currExpName = 'FVI Offline View Path';
     plotFVIPath(viewPath, visibilities, openList{end}(idx).y, runState, fig_fvi_view);
     disp("Displaying example FVI viewing path");
 end
 
 clearvars fig_fvi_grasp fig_fvi_view
-save('Exp3Results.mat');
+save('Exp2Results.mat');
 
 clearvars
 FigList = findobj(allchild(0), 'flat', 'Type', 'figure');
-save('Exp3Figures.mat');
+save('Exp2Figures.mat');

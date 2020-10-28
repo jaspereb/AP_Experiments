@@ -18,7 +18,7 @@ for idx = 1:size(nodesOnLevel,2)
     testNode = nodesOnLevel(idx);
     if(sum(abs(node.x - testNode.x)) < ep)
         
-        dominating = trace(node.Sigma) <= trace(testNode.Sigma);
+        dominating = node.Cost <= testNode.Cost;
         
         if(dominating)  %Replace the dominated node
             list{level}(idx) = node;

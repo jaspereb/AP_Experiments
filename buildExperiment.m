@@ -41,8 +41,10 @@ expState.imageNoise = 2; %Sigma for pixel noise added to detections
 expState.showFigs = true; %Whether to show camera paths for debugging
 expState.showEKFFigs = false; %Whether to show and state estimates for every EKF run while debugging
 expState.plotResults = true; %Whether to plot experiment results (sigma over time)
-expState.numRuns = 100;
+expState.numRuns = 5;
 expState.printEKFStatus = false; %To print the result of each EKF run
+expState.SigmaWeighting = [1,0,0;0,1,0;0,0,3]; %Element wise weightings for Sigma
+expState.costFn = 'Trace'; % Trace, Weighted Trace, or Composite
 
 % expState.targetPose(3) = expState.initialTargetPose(3) + 0.3; %For testing
 fprintf('Initial target pose is %f,%f,%f \n',expState.initialTargetPose(1),expState.initialTargetPose(2),expState.initialTargetPose(3));
@@ -60,8 +62,8 @@ K = [];
 
 save('StartState.mat');
 
-run Experiment1
-
-run Experiment2
-
-run Experiment3
+% run Experiment1
+% 
+% run Experiment2
+% 
+% run Experiment3

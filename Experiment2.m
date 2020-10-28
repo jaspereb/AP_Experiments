@@ -9,12 +9,13 @@ close all
 
 load('StartState.mat');
 expState.currExpName = 'FVI Offline';
-
+expState.costFn = 'Trace';
 for run = 1:expState.numRuns
     [runState,x,C] = getRandTarget(expState);
     
     % Initialise the starting node
-    openList{1} = createANode(runState.initialPose(1:3),x(:,1),runState.P{1},[]);
+    cost = getNodeCost(runState.P{1}, x(:,1), runState);
+    openList{1} = createANode(runState.initialPose(1:3),x(:,1),runState.P{1},cost,[]);
     actionOffsets = getActionOffsets(runState);
    
     % Run FVI 
@@ -51,12 +52,11 @@ for run = 1:expState.numRuns
     [graspPath,graspCost,graspDiagonals,graspVisibilities] = constructPath(openList{end}(idx),runState);
     
     %Find the best path which ends anywhere, for viewing
-    traces = [];
+    costs = [];
     for idx = 1:size(openList{end},2)
-       Sigma = openList{end}(idx).Sigma; 
-       traces(idx) = trace(Sigma);
+       costs(idx) = openList{end}(idx).Cost; 
     end
-    [~,idx] = min(traces);
+    [~,idx] = min(costs);
     [viewPath,cost,diagonals,visibilities] = constructPath(openList{end}(idx),runState);
     
     %Run the EKF

@@ -74,7 +74,9 @@ end
 Sigma = A*Sigma*A' + W;
 assert(max(isnan(Sigma(:))) == 0);
 
-childNode = createANode(x,y,Sigma,parentNode,visible);
+cost = getNodeCost(Sigma,x,expState);
+
+childNode = createANode(x,y,Sigma,cost,parentNode,visible);
 end
 
 function M = piPrime(N)

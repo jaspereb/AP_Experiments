@@ -43,12 +43,12 @@ results.xErrorFinalStd = std(results.xErrorMat(:,end));
 results.yErrorFinalStd = std(results.yErrorMat(:,end));
 results.zErrorFinalStd = std(results.zErrorMat(:,end));
 
-%Final sigma trace and the std of this
+%Final cost function value and the std of this
 for run = 1:numRuns
-    finalTraces(run) = trace(results.P{run}{numTimesteps});
+    finalCosts(run) = getNodeCost(results.P{run}{numTimesteps},results.x{run}(:,numTimesteps),expState); 
 end
-results.traceFinalMean = mean(finalTraces);
-results.traceFinalStd = std(finalTraces);
+results.costFinalMean = mean(finalCosts);
+results.costFinalStd = std(finalCosts);
 
 %Calculate elementwise mean of sigma for each timestep
 for timestep = 1:numTimesteps
@@ -56,6 +56,7 @@ for timestep = 1:numTimesteps
     for run = 1:numRuns
         sigmaMean = sigmaMean + results.P{run}{timestep}; %sigma mean over all runs
         traces(run,timestep) = trace(results.P{run}{timestep});
+        costs(run,timestep) = getNodeCost(results.P{run}{timestep},results.x{run}(:,timestep),expState); 
     end
     results.sigmaMean{timestep} = sigmaMean./numRuns;
     
@@ -65,6 +66,9 @@ for timestep = 1:numTimesteps
     
     results.traceStd(timestep) = std(traces(:,timestep));
     results.traceMean(timestep) = mean(traces(:,timestep));
+    
+    results.costStd(timestep) = std(costs(:,timestep));
+    results.costMean(timestep) = mean(costs(:,timestep));
 end
 
 
@@ -74,8 +78,8 @@ fprintf("Mean final errors for %s experiment are: (%f, %f, %f)m \n", ...
 fprintf("With std deviations: (%f, %f, %f)m \n", ... 
     results.xErrorFinalStd, results.yErrorFinalStd, ... 
     results.zErrorFinalStd);
-fprintf("And final sigma trace: %f \n", results.traceFinalMean);
-fprintf("With std deviation: %f \n", results.traceFinalStd);
+fprintf("And final cost value: %f \n", results.costFinalMean);
+fprintf("With std deviation: %f \n", results.costFinalStd);
 
 if(expState.plotResults)
     %Show the mean error and std plots over time
@@ -94,6 +98,14 @@ if(expState.plotResults)
     hold on
     title(strcat(expState.currExpName, ' Sigma Trace'));
     errorbar(1:numTimesteps,results.traceMean,results.traceStd,'r');
+    xlabel('Filter Timestep');
+    grid on
+    
+    %Show the mean cost function over time
+    figure();
+    hold on
+    title(strcat(expState.currExpName, ' Cost Function'));
+    errorbar(1:numTimesteps,results.costMean,results.costStd,'r');
     xlabel('Filter Timestep');
     grid on
     

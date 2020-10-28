@@ -11,6 +11,7 @@ straightResults = makeResultsStruct(expState);
 % Straight Path Experiment
 straightPoses = getPosesStraight(cameraPose,expState);
 expState.currExpName = 'Straight Path';
+expState.costFn = 'Trace';
 for run = 1:expState.numRuns
     [runState,x,C] = getRandTarget(expState);
     [x_straight,P_straight,z_straight] = runEKF(straightPoses,runState,functH,x,K,C);
@@ -32,6 +33,7 @@ straightResults = calculateResults(straightResults,expState);
 % Diagonal Path Experiment
 diagonalPoses = getPosesDiagonal(cameraPose,expState);
 expState.currExpName = 'Diagonal Path';
+expState.costFn = 'Trace';
 for run = 1:expState.numRuns
     [runState,x,C] = getRandTarget(expState);
     [x_diagonal,P_diagonal,z_diagonal] = runEKF(diagonalPoses,runState,functH,x,K,C);
