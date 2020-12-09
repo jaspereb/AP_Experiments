@@ -11,7 +11,7 @@ straightResults = makeResultsStruct(expState);
 % Straight Path Experiment
 straightPoses = getPosesStraight(cameraPose,expState);
 expState.currExpName = 'Straight Path';
-expState.costFn = 'Trace';
+expState.costFn = 'Weighted Trace';
 for run = 1:expState.numRuns
     [runState,x,C] = getRandTarget(expState);
     [x_straight,P_straight,z_straight] = runEKF(straightPoses,runState,functH,x,K,C);
@@ -25,7 +25,7 @@ for run = 1:expState.numRuns
 end
 if(expState.showFigs)
     fig_straight = figure();
-    plotState(straightPoses, runState, fig_straight);
+    plotState(straightPoses, runState, z_straight, fig_straight);
 end
 
 straightResults = calculateResults(straightResults,expState);
@@ -33,7 +33,7 @@ straightResults = calculateResults(straightResults,expState);
 % Diagonal Path Experiment
 diagonalPoses = getPosesDiagonal(cameraPose,expState);
 expState.currExpName = 'Diagonal Path';
-expState.costFn = 'Trace';
+expState.costFn = 'Weighted Trace';
 for run = 1:expState.numRuns
     [runState,x,C] = getRandTarget(expState);
     [x_diagonal,P_diagonal,z_diagonal] = runEKF(diagonalPoses,runState,functH,x,K,C);
@@ -47,7 +47,7 @@ for run = 1:expState.numRuns
 end
 if(expState.showFigs)
     fig_diag = figure();
-    plotState(diagonalPoses, runState, fig_diag);
+    plotState(diagonalPoses, runState, z_straight, fig_diag);
 end
 
 diagonalResults = calculateResults(diagonalResults,expState);

@@ -19,32 +19,33 @@ clearvars
 addpath('./Utils');
 addpath('./Utils/NodeFunctions');
 
-% Simulation Parameters
-expState.R = 4;
+% The EKF covariance mats, variance is squared std dev
+expState.R = 4; 
 expState.Qxy = 0.001;
 expState.Qz = 0.001;
-expState.Pxy = 0.05;
-expState.Pz = 0.7;
+expState.Pxy = 0.01;
+expState.Pz = 0.25;
+
 expState.cameraParams = getCameraParams();
 expState.trellisDist = 4;
 expState.initialTargetPose = [0.0;0.0;expState.trellisDist]; % True target position
 expState.grabPose = [expState.initialTargetPose;1;0;0;0]; %The final camera pose
 expState.initialPose = [0;0;0;1;0;0;0]; %(xyz position) and (wxyz quaternion)
 expState.initialPose = alignCamera(expState.initialPose, expState.grabPose(1:3),expState);
-expState.targetZNoise = 0.05;
-expState.targetXYNoise = 0.1;
+expState.targetZNoise = 0.5; %The noise std dev
+expState.targetXYNoise = 0.1; %The noise std dev
 expState.numPoses = 11; %Number of poses to generate on each path, inc initial pose. Must be odd
 expState.diagonalDist = 0.5; %Distance the diagonal path moves off straight
 expState.minCamDistance = 0.25; %Below this z range, detections will not be generated
-expState.maxCamDistance = inf;
-expState.imageNoise = 2; %Sigma for pixel noise added to detections
+expState.maxCamDistance = 3.0;
+expState.imageNoise = 2; %Std dev for pixel noise added to detections
 expState.showFigs = true; %Whether to show camera paths for debugging
 expState.showEKFFigs = false; %Whether to show and state estimates for every EKF run while debugging
 expState.plotResults = true; %Whether to plot experiment results (sigma over time)
-expState.numRuns = 5;
+expState.numRuns = 50;
 expState.printEKFStatus = false; %To print the result of each EKF run
-expState.SigmaWeighting = [1,0,0;0,1,0;0,0,3]; %Element wise weightings for Sigma
-expState.costFn = 'Trace'; % Trace, Weighted Trace, or Composite
+expState.SigmaWeighting = [0.67,0,0;0,0.1,0;0,0,0.23]; %Element wise weightings for Sigma
+expState.costFn = 'Weighted Trace'; % Trace, Weighted Trace, or Composite
 
 % expState.targetPose(3) = expState.initialTargetPose(3) + 0.3; %For testing
 fprintf('Initial target pose is %f,%f,%f \n',expState.initialTargetPose(1),expState.initialTargetPose(2),expState.initialTargetPose(3));

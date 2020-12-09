@@ -17,10 +17,10 @@ for col = 1:size(cameraPoses,2)
     pose3d = rigid3d(R',t');
 
     figure(fig);
-    if(visibilities(col))
-        cam = plotCamera('AbsolutePose',pose3d,'Opacity',0, 'Size',0.1);
-    else %Blue if target is not visible from that pose
+    if(~visibilities(col) || col==1) %Blue if target is not visible from that pose or is first pose
         cam = plotCamera('AbsolutePose',pose3d,'Opacity',0, 'Size',0.1, 'Color', [0,0,1]);
+    else 
+        cam = plotCamera('AbsolutePose',pose3d,'Opacity',0, 'Size',0.1);
     end
     grid on
     axis equal

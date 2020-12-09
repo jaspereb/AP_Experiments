@@ -4,10 +4,15 @@ function [expState,x,C] = getRandTarget(expState)
 
 % Add Initial Noise
 expState.targetPose = expState.initialTargetPose + ...
-    [normrnd(0,expState.targetZNoise);normrnd(0,expState.targetZNoise);normrnd(0,expState.targetZNoise)];
+    [normrnd(0,expState.targetXYNoise);normrnd(0,expState.targetXYNoise);normrnd(0,expState.targetZNoise)];
 
 cameraPose = expState.initialPose;
-[u,v] = getDetection(cameraPose, expState);
+
+%Turn off cam max/min limits for this step
+expStateCp = expState;
+expStateCp.minCamDistance = 0;
+expStateCp.maxCamDistance = inf;
+[u,v] = getDetection(cameraPose, expStateCp);
 
 % Estimate initial state using first detection, assume that we know roughly 
 % the distance to trellis

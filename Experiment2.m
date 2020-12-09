@@ -1,5 +1,5 @@
 %Experiment 2 generates an estimate from 1000 runs of the best path found
-%using offline FVI
+%using offline weighted FVI
 
 %NOTE: within nodes, x refers to the camera pose and y to the target pose.
 %Within the EKF x referes to target pose
@@ -9,7 +9,7 @@ close all
 
 load('StartState.mat');
 expState.currExpName = 'FVI Offline';
-expState.costFn = 'Trace';
+expState.costFn = 'Weighted Trace';
 for run = 1:expState.numRuns
     [runState,x,C] = getRandTarget(expState);
     

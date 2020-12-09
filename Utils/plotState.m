@@ -1,6 +1,7 @@
-function plotState(cameraPoses,expState,fig)
+function plotState(cameraPoses,expState,observations,fig)
 %Plotstate plots the camera pose and target pose. CameraPose is 7xN where 
 %N is the number of poses to plot 
+%observations is a 2xN matrix of [u,v] coords for calculating visibility
 
 assert(size(cameraPoses,1) == 7);
 if(exist('fig'))
@@ -17,7 +18,11 @@ for col = 1:size(cameraPoses,2)
     pose3d = rigid3d(R',t');
 
     figure(fig);
-    cam = plotCamera('AbsolutePose',pose3d,'Opacity',0, 'Size',0.1);
+    if(observations(1,col)==-1 || observations(2,col)==-1 || col==1) %Blue if target is not visible from that pose or is first pose
+        cam = plotCamera('AbsolutePose',pose3d,'Opacity',0, 'Size',0.1, 'Color', [0,0,1]);
+    else 
+        cam = plotCamera('AbsolutePose',pose3d,'Opacity',0, 'Size',0.1);
+    end
     grid on
     axis equal
     
