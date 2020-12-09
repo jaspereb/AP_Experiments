@@ -8,6 +8,7 @@ load('StartState.mat');
 
 straightResults = makeResultsStruct(expState);
 
+tic
 % Straight Path Experiment
 straightPoses = getPosesStraight(cameraPose,expState);
 expState.currExpName = 'Straight Path';
@@ -23,6 +24,7 @@ for run = 1:expState.numRuns
         fprintf('\t \t \t \t \t \t \t Executing run %d of %d \n',run, expState.numRuns);
     end
 end
+straightTime = toc;
 if(expState.showFigs)
     fig_straight = figure();
     plotState(straightPoses, runState, z_straight, fig_straight);
@@ -31,6 +33,7 @@ end
 straightResults = calculateResults(straightResults,expState);
 
 % Diagonal Path Experiment
+tic
 diagonalPoses = getPosesDiagonal(cameraPose,expState);
 expState.currExpName = 'Diagonal Path';
 expState.costFn = 'Weighted Trace';
@@ -45,6 +48,7 @@ for run = 1:expState.numRuns
         fprintf('\t \t \t \t \t \t \t Executing run %d of %d \n',run, expState.numRuns);
     end
 end
+diagonalTime = toc;
 if(expState.showFigs)
     fig_diag = figure();
     plotState(diagonalPoses, runState, z_straight, fig_diag);

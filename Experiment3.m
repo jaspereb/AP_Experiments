@@ -1,7 +1,9 @@
-%NOT YET IMPLEMENTED??
-
 %Experiment 3 generates an estimate from 1000 runs of the best path found
-%using online weighted FVI
+%using a semi-online weighted FVI. This is not the full online case but
+%actually re-linearises the information matrix at each node using the EKF
+%equations. This is much faster than the full online case but impossible to
+%physically carry out, it is used to determine how much better the online
+%method 'Could' be.
 
 %NOTE: within nodes, x refers to the camera pose and y to the target pose.
 %Within the EKF x referes to target pose
@@ -10,6 +12,8 @@ clearvars
 close all
 
 load('StartState.mat');
+
+tic
 expState.currExpName = 'FVI Online';
 expState.costFn = 'Weighted Trace';
 for run = 1:expState.numRuns
@@ -82,6 +86,7 @@ for run = 1:expState.numRuns
         fprintf('\t \t \t \t \t \t \t Executing run %d of %d \n',run, expState.numRuns);
     end
 end
+onlineRVITime = toc;
 
 disp("Calculating results for end pose constrained path");
 expState.currExpName = 'FVI Online Grasp Path';
@@ -95,10 +100,12 @@ if(runState.showFigs)
     expState.currExpName = 'FVI Online Grasp Path';
     plotFVIPath(graspPath, visibilities, openList{end}(idx).y, runState, fig_fvi_grasp);
     disp("Displaying example FVI grasping path");
+    title('RVI Online Constrained Path');
     fig_fvi_view = figure();
     expState.currExpName = 'FVI Online View Path';
     plotFVIPath(viewPath, visibilities, openList{end}(idx).y, runState, fig_fvi_view);
     disp("Displaying example FVI viewing path");
+    title('RVI Online Constrained Path');
 end
 
 clearvars fig_fvi_grasp fig_fvi_view

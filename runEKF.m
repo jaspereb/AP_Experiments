@@ -25,7 +25,7 @@ for idx = 1:size(poses,2)
     [zHat,C{time}] = calcJac(functH, x(:,time), cameraPose, expState);
     [u,v] = getDetection(cameraPose, expState);
     z = [u;v];
-    obs(:,time) = z;
+    obs(:,idx) = z;
     
     if(u == -1)
         fprintf("Detection out of frame for pose %i, skipping update step \n", idx);
@@ -45,7 +45,7 @@ end
 %Remove the last element because the camera is already at the target
 x(:,end) = [];
 P = P(1:end-1);
-obs(:,end) = [];
+% obs(:,end) = [];
 
 if(expState.printEKFStatus)
     fprintf('Estimated target pose from %s is %f,%f,%f \n', ...

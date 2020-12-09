@@ -1,4 +1,4 @@
-function plotFVIPath(cameraPoses,visibilities,estimate,expState,fig)
+function plotFVIPath(cameraPoses,observations,estimate,expState,fig)
 %plotFVIPath plots the camera pose and estimated target pose for an FVI path. 
 %CameraPose is 7xN where N is the number of poses to plot 
 
@@ -17,7 +17,7 @@ for col = 1:size(cameraPoses,2)
     pose3d = rigid3d(R',t');
 
     figure(fig);
-    if(~visibilities(col) || col==1) %Blue if target is not visible from that pose or is first pose
+    if(observations(1,col)==-1 || observations(2,col)==-1 || col==1) %Blue if target is not visible from that pose or is first pose
         cam = plotCamera('AbsolutePose',pose3d,'Opacity',0, 'Size',0.1, 'Color', [0,0,1]);
     else 
         cam = plotCamera('AbsolutePose',pose3d,'Opacity',0, 'Size',0.1);
