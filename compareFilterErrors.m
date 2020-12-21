@@ -12,6 +12,8 @@ numSteps = 1:size(straightResults.xErrorMat,2);
 N=4;
 C = linspecer(N);
     
+offset = 0.08;
+
 %X Component
 fig = figure();
 title('Mean Filter X Error');
@@ -19,16 +21,17 @@ hold on
 lw = 1.2;
 eb = errorbar(numSteps,straightResults.xErrorMean,straightResults.xErrorStd,'color',C(1,:));
 eb.LineWidth = lw;
-eb = errorbar(numSteps+0.03,diagonalResults.xErrorMean,diagonalResults.xErrorStd,'color',C(2,:));
+eb = errorbar(numSteps+offset,diagonalResults.xErrorMean,diagonalResults.xErrorStd,'color',C(2,:));
 eb.LineWidth = lw;
-eb = errorbar(numSteps+0.06,FVIofflineGraspResults.xErrorMean,FVIofflineGraspResults.xErrorStd,'color',C(3,:));
+eb = errorbar(numSteps+2*offset,FVIofflineGraspResults.xErrorMean,FVIofflineGraspResults.xErrorStd,'color',C(3,:));
 eb.LineWidth = lw;
-eb = errorbar(numSteps+0.09,FVIonlineGraspResults.xErrorMean,FVIonlineGraspResults.xErrorStd,'color',C(4,:));
+eb = errorbar(numSteps+3*offset,FVIonlineGraspResults.xErrorMean,FVIonlineGraspResults.xErrorStd,'color',C(4,:));
 eb.LineWidth = lw;
 plot(numSteps,zeros(size(numSteps,2),1),'k');
 xlabel('Filter Timestep');
 legend('Straight Path', 'Diagonal Path', 'Offline RVI Constrained', 'Online RVI Constrained');
 grid minor
+ylabel('Error (m)');
 
 %Y Component
 fig = figure();
@@ -37,11 +40,11 @@ hold on
 lw = 1.2;
 eb = errorbar(numSteps,straightResults.yErrorMean,straightResults.yErrorStd,'color',C(1,:));
 eb.LineWidth = lw;
-eb = errorbar(numSteps+0.03,diagonalResults.yErrorMean,diagonalResults.yErrorStd,'color',C(2,:));
+eb = errorbar(numSteps+offset,diagonalResults.yErrorMean,diagonalResults.yErrorStd,'color',C(2,:));
 eb.LineWidth = lw;
-eb = errorbar(numSteps+0.06,FVIofflineGraspResults.yErrorMean,FVIofflineGraspResults.yErrorStd,'color',C(3,:));
+eb = errorbar(numSteps+2*offset,FVIofflineGraspResults.yErrorMean,FVIofflineGraspResults.yErrorStd,'color',C(3,:));
 eb.LineWidth = lw;
-eb = errorbar(numSteps+0.09,FVIonlineGraspResults.yErrorMean,FVIonlineGraspResults.yErrorStd,'color',C(4,:));
+eb = errorbar(numSteps+3*offset,FVIonlineGraspResults.yErrorMean,FVIonlineGraspResults.yErrorStd,'color',C(4,:));
 eb.LineWidth = lw;
 plot(numSteps,zeros(size(numSteps,2),1),'k');
 xlabel('Filter Timestep');
@@ -55,11 +58,11 @@ hold on
 lw = 1.2;
 eb = errorbar(numSteps,straightResults.zErrorMean,straightResults.zErrorStd,'color',C(1,:));
 eb.LineWidth = lw;
-eb = errorbar(numSteps+0.03,diagonalResults.zErrorMean,diagonalResults.zErrorStd,'color',C(2,:));
+eb = errorbar(numSteps+offset,diagonalResults.zErrorMean,diagonalResults.zErrorStd,'color',C(2,:));
 eb.LineWidth = lw;
-eb = errorbar(numSteps+0.06,FVIofflineGraspResults.zErrorMean,FVIofflineGraspResults.zErrorStd,'color',C(3,:));
+eb = errorbar(numSteps+2*offset,FVIofflineGraspResults.zErrorMean,FVIofflineGraspResults.zErrorStd,'color',C(3,:));
 eb.LineWidth = lw;
-eb = errorbar(numSteps+0.09,FVIonlineGraspResults.zErrorMean,FVIonlineGraspResults.zErrorStd,'color',C(4,:));
+eb = errorbar(numSteps+3*offset,FVIonlineGraspResults.zErrorMean,FVIonlineGraspResults.zErrorStd,'color',C(4,:));
 eb.LineWidth = lw;
 plot(numSteps,zeros(size(numSteps,2),1),'k');
 xlabel('Filter Timestep');

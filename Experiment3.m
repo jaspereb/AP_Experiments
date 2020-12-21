@@ -98,14 +98,14 @@ FVIonlineViewResults = calculateResults(FVIonlineViewResults,expState);
 if(runState.showFigs)
     fig_fvi_grasp = figure();
     expState.currExpName = 'FVI Online Grasp Path';
-    plotFVIPath(graspPath, visibilities, openList{end}(idx).y, runState, fig_fvi_grasp);
+    plotFVIPath(graspPath, z_FVI_grasp_online, x_FVI_grasp_online(:,end), runState, fig_fvi_grasp);
     disp("Displaying example FVI grasping path");
     title('RVI Online Constrained Path');
     fig_fvi_view = figure();
     expState.currExpName = 'FVI Online View Path';
-    plotFVIPath(viewPath, visibilities, openList{end}(idx).y, runState, fig_fvi_view);
+    plotFVIPath(viewPath, z_FVI_view_online, x_FVI_view_online(:,end), runState, fig_fvi_view);
     disp("Displaying example FVI viewing path");
-    title('RVI Online Constrained Path');
+    title('RVI Online Unconstrained Path');
 end
 
 clearvars fig_fvi_grasp fig_fvi_view

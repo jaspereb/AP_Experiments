@@ -93,12 +93,12 @@ FVIofflineViewResults = calculateResults(FVIofflineViewResults,expState);
 if(runState.showFigs)
     fig_fvi_grasp = figure();
     expState.currExpName = 'FVI Offline Grasp Path';
-    plotFVIPath(graspPath, z_FVI_grasp_offline, openList{end}(idx).y, runState, fig_fvi_grasp);
+    plotFVIPath(graspPath, z_FVI_grasp_offline, x_FVI_grasp_offline(:,end), runState, fig_fvi_grasp);
     disp("Displaying example FVI grasping path");
     title('RVI Offline Constrained Path');
     fig_fvi_view = figure();
     expState.currExpName = 'FVI Offline View Path';
-    plotFVIPath(viewPath, z_FVI_view_offline, openList{end}(idx).y, runState, fig_fvi_view);
+    plotFVIPath(viewPath, z_FVI_view_offline, x_FVI_view_offline(:,end), runState, fig_fvi_view);
     title('RVI Offline Unconstrained Path');
     disp("Displaying example FVI viewing path");
 end

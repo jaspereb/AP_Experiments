@@ -42,9 +42,9 @@ expState.imageNoise = 2; %Std dev for pixel noise added to detections
 expState.showFigs = true; %Whether to show camera paths for debugging
 expState.showEKFFigs = false; %Whether to show and state estimates for every EKF run while debugging
 expState.plotResults = true; %Whether to plot experiment results (sigma over time)
-expState.numRuns = 5;
+expState.numRuns = 2;
 expState.printEKFStatus = false; %To print the result of each EKF run
-expState.SigmaWeighting = [0.67,0,0;0,0.1,0;0,0,0.23]; %Element wise weightings for Sigma
+expState.SigmaWeighting = [0.095, 0,0; 0,0.631,0; 0,0,0.273]; %Element wise weightings for Sigma
 expState.costFn = 'Weighted Trace'; % Trace, Weighted Trace, or Composite
 
 % expState.targetPose(3) = expState.initialTargetPose(3) + 0.3; %For testing

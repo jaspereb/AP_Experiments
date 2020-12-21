@@ -39,8 +39,8 @@ for col = 1:size(cameraPoses,2)
     
 end
 
-plot3(expState.targetPose(1),expState.targetPose(2),expState.targetPose(3), 'r*');
-plot3(estimate(1),estimate(2),estimate(3), 'ro');
+plot3(expState.targetPose(1),expState.targetPose(2),expState.targetPose(3), 'g*');
+plot3(estimate(1),estimate(2),estimate(3), 'ko');
 
 %Plot World Axes
 tf = makehgtform;

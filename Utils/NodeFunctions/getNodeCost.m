@@ -13,6 +13,7 @@ elseif(strcmp(expState.costFn,'Composite'))
     dist = distFromXToY(x); %Need to write this
     cost = expState.costAlpha*trace(SW) + expState.costBeta*dist;
     disp("Not implemented");
+    disp(throwanerror);
     
 else
     disp("ERROR: Unknown cost function name for getNodeCost");
