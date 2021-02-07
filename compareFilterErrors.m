@@ -1,6 +1,7 @@
 %Generate a plot of the mean error magnitude for each method
 clear all
 close all
+addpath('Utils/linspecer');
 
 load('Exp1Results.mat');
 load('Exp2Results.mat');
